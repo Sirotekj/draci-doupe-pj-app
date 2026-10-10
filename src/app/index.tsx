@@ -1,5 +1,5 @@
-import { HomeScreen } from '@/features/home/home-screen';
+import { IntroductionScreen } from '@/features/introduction/introduction-screen';
 
-export default function IndexRoute() {
-  return <HomeScreen />;
+export default function IntroductionRoute() {
+  return <IntroductionScreen />;
 }

@@ -2,10 +2,10 @@ import { Text } from 'react-native';
 
 import { Screen } from '@/shared/ui/screen';
 
-export function HomeScreen() {
+export function ArchiveScreen() {
   return (
     <Screen>
-      <Text>Dračí doupě</Text>
+      <Text>Archive</Text>
     </Screen>
   );
 }
