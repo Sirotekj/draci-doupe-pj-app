@@ -21,6 +21,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
@@ -32,6 +33,39 @@
           "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Cinzel",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Cinzel-Regular.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "Metamorphous",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Metamorphous-Regular.ttf",
+                    "weight": 400
+                  }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": [
+              "./assets/fonts/Cinzel-Regular.ttf",
+              "./assets/fonts/Metamorphous-Regular.ttf"
+            ]
+          }
         }
       ]
     ],
