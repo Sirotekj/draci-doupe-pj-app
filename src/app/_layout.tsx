@@ -1,25 +1,85 @@
 import '../../global.css';
 
-import { useFonts } from 'expo-font';
+import { Asset } from 'expo-asset';
+import { isLoaded, useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import { requireNativeModule } from 'expo-modules-core';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { colors } from '@/shared/theme/colors';
-import { getFontSources } from '@/shared/theme/typography';
+import { fonts, getFontSources } from '@/shared/theme/typography';
+
+const fontSources = getFontSources();
 
 SplashScreen.preventAutoHideAsync();
 
+async function loadFontsNatively() {
+  const loader = requireNativeModule('ExpoFontLoader');
+
+  await Promise.all(
+    Object.entries(fontSources).map(async ([name, moduleId]) => {
+      if (isLoaded(name)) {
+        return;
+      }
+
+      const asset = Asset.fromModule(moduleId);
+      await asset.downloadAsync();
+
+      if (!asset.localUri) {
+        throw new Error(`Font file for ${name} did not download.`);
+      }
+
+      await loader.loadAsync(name, asset.localUri);
+    }),
+  );
+}
+
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts(getFontSources());
+  const [fontsLoaded, fontError] = useFonts(fontSources);
+  const [fontsReady, setFontsReady] = useState(false);
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
+    if (fontError) {
+      console.error(fontError);
     }
+  }, [fontError]);
+
+  useEffect(() => {
+    if (!fontsLoaded && !fontError) {
+      return;
+    }
+
+    if (Platform.OS === 'web' || isLoaded(fonts.metamorphous)) {
+      setFontsReady(true);
+      return;
+    }
+
+    let mounted = true;
+
+    loadFontsNatively()
+      .catch((error: unknown) => {
+        console.error(error);
+      })
+      .finally(() => {
+        if (mounted) {
+          setFontsReady(true);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
   }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError) {
+  useEffect(() => {
+    if (fontsReady || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsReady, fontError]);
+
+  if (!fontsReady && !fontError) {
     return null;
   }
 

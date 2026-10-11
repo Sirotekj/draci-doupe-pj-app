@@ -1,6 +1,8 @@
 import { router } from 'expo-router';
-import { Button, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Button } from '@/shared/ui/button';
+import { Text } from '@/shared/ui/text';
 
 export function IntroductionScreen() {
   return (
@@ -15,14 +17,14 @@ export function IntroductionScreen() {
         přispěj k tomu, aby dobrodružství ve světě tvém plynula snáze a
         radostněji.
       </Text>
-      <Button title="Přihlásit" onPress={() => router.replace('/combat')} />
+      <Button text="Přihlásit" onPress={() => router.replace('/combat')} />
       <Text className="text-yellow text-center">Pokračovat offline!</Text>
       <Text className="text-white">
         Můžeš pokračovat i bez spojení se vzdálenými archivy, avšak některé
         možnosti ti zůstanou odepřeny a k online bestiáři ani dalším sdíleným
         záznamům nebudeš mít přístup.
       </Text>
-      <Button title="Offline" onPress={() => router.replace('/combat')} />
+      <Button text="Offline" onPress={() => router.replace('/combat')} />
     </SafeAreaView>
   );
 }
