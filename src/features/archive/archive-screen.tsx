@@ -29,11 +29,16 @@ export function ArchiveScreen() {
             ) : (
               bestiary.enemies.map((enemy) => (
                 <View key={enemy.id} className="flex-row items-center gap-4">
-                  <Text className="min-w-0 flex-1 text-white">{enemy.name}</Text>
+                  <Text className="min-w-0 flex-1 text-white">
+                    {enemy.name}
+                  </Text>
                   <Button
                     text="Upravit"
                     onPress={() => {
-                      router.push({ pathname: '/enemy', params: { id: enemy.id } });
+                      router.push({
+                        pathname: '/enemy',
+                        params: { id: enemy.id },
+                      });
                     }}
                   />
                   <Button
@@ -49,7 +54,7 @@ export function ArchiveScreen() {
           </>
         ) : null}
         <Button
-          text="Zpět"
+          text="Introduction"
           onPress={() => {
             clearAccess();
             router.replace('/');

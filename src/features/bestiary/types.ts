@@ -1,4 +1,32 @@
 export type Enemy = {
   id: string;
   name: string;
+  health: number | null;
+  level: number | null;
+  divinePower: number | null;
+  challengeRating: string | null;
+  strength: number | null;
+  dexterity: number | null;
+  constitution: number | null;
+  intelligence: number | null;
+  charisma: number | null;
+  movement: number | null;
+  size: string | null;
+  attackValue: number | null;
+  damageValue: number | null;
+  baseDefense: number | null;
+  defenseValue: number | null;
+  specialAbilities: string | null;
+  resistances: string | null;
+  immunities: string | null;
+  weaknesses: string | null;
+  skills: string | null;
+  habitat: string | null;
+  type: string | null;
+  experiencePoints: number | null;
+  notes: string | null;
+  description: string | null;
+  isPublic: boolean;
 };
+
+export type EnemyDetails = Omit<Enemy, 'id'>;

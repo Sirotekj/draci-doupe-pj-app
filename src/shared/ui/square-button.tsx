@@ -10,7 +10,11 @@ const borderWidth = 1;
 type SquareButtonProps = {
   value: '+' | number;
   onPress: () => void;
+  active?: boolean;
+  done?: boolean;
 };
+
+const doneBackground = `${colors.yellow}40`;
 
 const borderBackground = (
   Platform.OS === 'web'
@@ -18,24 +22,33 @@ const borderBackground = (
     : { experimental_backgroundImage: colors.gradient }
 ) as ViewStyle;
 
-export function SquareButton({ value, onPress }: SquareButtonProps) {
+export function SquareButton({
+  value,
+  onPress,
+  active = false,
+  done = false,
+}: SquareButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={String(value)}
+      accessibilityState={{ selected: active }}
       onPress={onPress}
       style={{
-        ...borderBackground,
         width: side,
         height: side,
         borderRadius: radius,
         padding: borderWidth,
         overflow: 'hidden',
+        ...(active ? { backgroundColor: colors.yellow } : borderBackground),
       }}
     >
       <View
-        className="flex-1 items-center justify-center bg-black px-small"
-        style={{ borderRadius: radius - borderWidth }}
+        className="flex-1 items-center justify-center px-small"
+        style={{
+          borderRadius: radius - borderWidth,
+          backgroundColor: done ? doneBackground : colors.black,
+        }}
       >
         <Text
           adjustsFontSizeToFit

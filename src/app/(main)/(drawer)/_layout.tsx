@@ -22,8 +22,8 @@ export default function DrawerLayout() {
         drawerInactiveTintColor: colors.white,
       }}
     >
-      <Drawer.Screen name="combat" options={{ title: 'Combat' }} />
-      <Drawer.Screen name="archive" options={{ title: 'Archive' }} />
+      <Drawer.Screen name="combat" options={{ title: 'Boj' }} />
+      <Drawer.Screen name="archive" options={{ title: 'Archiv' }} />
     </Drawer>
   );
 }

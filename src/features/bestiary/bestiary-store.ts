@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
-import type { Enemy } from '@/features/bestiary/types';
+import { enemyFromUnknown } from '@/features/bestiary/enemy-fields';
+import type { Enemy, EnemyDetails } from '@/features/bestiary/types';
 import { createId } from '@/shared/id';
 import { createJsonWriter, readStoredJson } from '@/shared/storage/json-storage';
 
@@ -33,27 +34,14 @@ function getSnapshot() {
   return snapshot;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
 function parseEnemies(value: unknown): Enemy[] {
   if (!Array.isArray(value)) {
     return [];
   }
 
   return value.flatMap((item) => {
-    if (!isRecord(item) || typeof item.id !== 'string' || typeof item.name !== 'string') {
-      return [];
-    }
-
-    const name = item.name.trim();
-
-    if (item.id.length === 0 || name.length === 0) {
-      return [];
-    }
-
-    return [{ id: item.id, name }];
+    const enemy = enemyFromUnknown(item);
+    return enemy === null ? [] : [enemy];
   });
 }
 
@@ -84,14 +72,13 @@ async function hydrate() {
 
 void hydrate();
 
-export function createEnemy(name: string) {
-  const trimmed = name.trim();
+export function createEnemy(details: EnemyDetails) {
+  const enemy = enemyFromUnknown({ id: createId(), ...details });
 
-  if (!snapshot.ready || trimmed.length === 0) {
+  if (!snapshot.ready || enemy === null) {
     return null;
   }
 
-  const enemy = { id: createId(), name: trimmed };
   const enemies = [...snapshot.enemies, enemy];
   snapshot = { ready: true, enemies };
   emit();
@@ -99,17 +86,15 @@ export function createEnemy(name: string) {
   return enemy;
 }
 
-export function updateEnemy(id: string, name: string) {
-  const trimmed = name.trim();
-  const exists = snapshot.enemies.some((enemy) => enemy.id === id);
+export function updateEnemy(id: string, details: EnemyDetails) {
+  const enemy = enemyFromUnknown({ id, ...details });
+  const exists = snapshot.enemies.some((item) => item.id === id);
 
-  if (!snapshot.ready || trimmed.length === 0 || !exists) {
+  if (!snapshot.ready || enemy === null || !exists) {
     return false;
   }
 
-  const enemies = snapshot.enemies.map((enemy) =>
-    enemy.id === id ? { ...enemy, name: trimmed } : enemy,
-  );
+  const enemies = snapshot.enemies.map((item) => (item.id === id ? enemy : item));
   snapshot = { ready: true, enemies };
   emit();
   persist(enemies);
