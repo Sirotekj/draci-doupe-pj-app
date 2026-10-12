@@ -99,6 +99,40 @@ export function createEnemy(name: string) {
   return enemy;
 }
 
+export function updateEnemy(id: string, name: string) {
+  const trimmed = name.trim();
+  const exists = snapshot.enemies.some((enemy) => enemy.id === id);
+
+  if (!snapshot.ready || trimmed.length === 0 || !exists) {
+    return false;
+  }
+
+  const enemies = snapshot.enemies.map((enemy) =>
+    enemy.id === id ? { ...enemy, name: trimmed } : enemy,
+  );
+  snapshot = { ready: true, enemies };
+  emit();
+  persist(enemies);
+  return true;
+}
+
+export function deleteEnemy(id: string) {
+  if (!snapshot.ready) {
+    return false;
+  }
+
+  const enemies = snapshot.enemies.filter((enemy) => enemy.id !== id);
+
+  if (enemies.length === snapshot.enemies.length) {
+    return false;
+  }
+
+  snapshot = { ready: true, enemies };
+  emit();
+  persist(enemies);
+  return true;
+}
+
 export function useBestiary() {
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

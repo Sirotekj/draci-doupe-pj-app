@@ -108,6 +108,41 @@ export function addEnemyToCombat(enemyId: string) {
   });
 }
 
+export function removeCombatSlot(slotId: string) {
+  if (!snapshot.ready) {
+    return;
+  }
+
+  const slots = snapshot.slots.filter((slot) => slot.id !== slotId);
+
+  if (slots.length === snapshot.slots.length) {
+    return;
+  }
+
+  commit({
+    slots,
+    selectedSlotId: snapshot.selectedSlotId === slotId ? null : snapshot.selectedSlotId,
+  });
+}
+
+export function removeEnemyFromCombat(enemyId: string) {
+  if (!snapshot.ready || enemyId.length === 0) {
+    return;
+  }
+
+  const slots = snapshot.slots.filter((slot) => slot.enemyId !== enemyId);
+
+  if (slots.length === snapshot.slots.length) {
+    return;
+  }
+
+  const selectedSlotId = slots.some((slot) => slot.id === snapshot.selectedSlotId)
+    ? snapshot.selectedSlotId
+    : null;
+
+  commit({ slots, selectedSlotId });
+}
+
 export function selectCombatSlot(slotId: string) {
   if (!snapshot.ready || !snapshot.slots.some((slot) => slot.id === slotId)) {
     return;

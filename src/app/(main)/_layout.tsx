@@ -1,9 +1,12 @@
-import { Redirect } from 'expo-router';
-import { Drawer } from 'expo-router/drawer';
+import { Redirect, Stack } from 'expo-router';
 
 import { useAccess } from '@/features/access/access-store';
 import { colors } from '@/shared/theme/colors';
 import { defaultFont } from '@/shared/theme/typography';
+
+export const unstable_settings = {
+  anchor: '(drawer)',
+};
 
 export default function MainLayout() {
   const access = useAccess();
@@ -13,7 +16,7 @@ export default function MainLayout() {
   }
 
   return (
-    <Drawer
+    <Stack
       screenOptions={{
         headerStyle: { backgroundColor: colors.black },
         headerTintColor: colors.white,
@@ -22,15 +25,17 @@ export default function MainLayout() {
           fontFamily: defaultFont,
           fontWeight: 'normal',
         },
-        drawerLabelStyle: { fontFamily: defaultFont, fontWeight: 'normal' },
-        sceneStyle: { backgroundColor: colors.black },
-        drawerStyle: { backgroundColor: colors.black },
-        drawerActiveTintColor: colors.white,
-        drawerInactiveTintColor: colors.white,
+        contentStyle: { backgroundColor: colors.black },
       }}
     >
-      <Drawer.Screen name="combat" options={{ title: 'Combat' }} />
-      <Drawer.Screen name="archive" options={{ title: 'Archive' }} />
-    </Drawer>
+      <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="enemy"
+        options={{
+          presentation: 'modal',
+          title: 'Nepřítel',
+        }}
+      />
+    </Stack>
   );
 }
