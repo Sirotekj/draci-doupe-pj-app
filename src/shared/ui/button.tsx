@@ -33,7 +33,7 @@ export function Button({ text, onPress }: ButtonProps) {
         className="items-center bg-black px-medium py-small"
         style={{ borderRadius: radius - borderWidth }}
       >
-        <Text className="text-center text-white">{text}</Text>
+        <Text className="text-center text-yellow">{text}</Text>
       </View>
     </Pressable>
   );

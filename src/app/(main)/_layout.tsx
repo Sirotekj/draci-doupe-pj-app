@@ -1,9 +1,17 @@
+import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 
+import { useAccess } from '@/features/access/access-store';
 import { colors } from '@/shared/theme/colors';
 import { defaultFont } from '@/shared/theme/typography';
 
 export default function MainLayout() {
+  const access = useAccess();
+
+  if (!access) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <Drawer
       screenOptions={{
