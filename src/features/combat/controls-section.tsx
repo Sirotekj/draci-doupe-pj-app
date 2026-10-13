@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { DiceButton } from '@/shared/ui/dice-button';
@@ -11,34 +10,43 @@ type Props = {
   damageValue: string | undefined;
   baseDefense: string | undefined;
   defenseValue: string | undefined;
-  health: string | undefined;
+  health: number | null;
+  rolledAttack: number | null;
+  rolledDefense: number | null;
+  rolledBaseDefense: number | null;
+  onRollAttack: (result: number) => void;
+  onRollDefense: (result: number) => void;
+  onRollBaseDefense: (result: number) => void;
+  onChangeHealth: (health: number) => void;
 };
 
 export function ControlsSection({
-  strength,
-  dexterity,
   attackValue,
   damageValue,
   baseDefense,
   defenseValue,
   health,
+  rolledAttack,
+  rolledDefense,
+  rolledBaseDefense,
+  onRollAttack,
+  onRollDefense,
+  onRollBaseDefense,
+  onChangeHealth,
 }: Props) {
-  const [rolledAttack, setRolledAttack] = useState<number | null>(null);
-  const [rolledDefense, setRolledDefense] = useState<number | null>(null);
-  const [rolledBaseDefense, setRolledBaseDefense] = useState<number | null>(
-    null,
-  );
+  function changeHealth(sign: '+' | '-') {
+    if (health === null) {
+      return;
+    }
 
-  const [actualHealth, setActualHealth] = useState<number | undefined>(
-    Number(health),
-  );
+    const next = sign === '+' ? health + 1 : health - 1;
 
-  const changeHealth = (sign: string) => {
-    setActualHealth(
-      (previewHealth) =>
-        previewHealth && (sign === '+' ? previewHealth + 1 : previewHealth - 1),
-    );
-  };
+    if (next < 0) {
+      return;
+    }
+
+    onChangeHealth(next);
+  }
 
   return (
     <>
@@ -52,11 +60,11 @@ export function ControlsSection({
                   Útok
                 </Text>
                 <Text className="font-cinzel text-white text-2xl">
-                  {rolledAttack &&
+                  {rolledAttack !== null &&
                     `${+attackValue + rolledAttack}${damageValue && ` + ${damageValue}`}`}
                 </Text>
               </View>
-              <DiceButton sides={6} onRoll={setRolledAttack} />
+              <DiceButton sides={6} onRoll={onRollAttack} />
             </View>
             <View className="flex-1 flex-row justify-between items-center">
               <View>
@@ -64,10 +72,10 @@ export function ControlsSection({
                   Obrana
                 </Text>
                 <Text className="font-cinzel text-white text-2xl">
-                  {rolledDefense && +defenseValue + rolledDefense}
+                  {rolledDefense !== null && +defenseValue + rolledDefense}
                 </Text>
               </View>
-              <DiceButton sides={6} onRoll={setRolledDefense} />
+              <DiceButton sides={6} onRoll={onRollDefense} />
             </View>
             <View className="flex-1 flex-row justify-between items-center">
               <View>
@@ -75,10 +83,10 @@ export function ControlsSection({
                   ZO
                 </Text>
                 <Text className="font-cinzel text-white text-2xl">
-                  {rolledBaseDefense && +baseDefense + rolledBaseDefense}
+                  {rolledBaseDefense !== null && +baseDefense + rolledBaseDefense}
                 </Text>
               </View>
-              <DiceButton sides={6} onRoll={setRolledBaseDefense} />
+              <DiceButton sides={6} onRoll={onRollBaseDefense} />
             </View>
           </View>
         )}
@@ -117,10 +125,10 @@ export function ControlsSection({
           </View>
         )}
       </View>
-      {health && (
+      {health !== null && (
         <View className="flex-1 flex-row justify-center gap-2">
           <Text className="font-cinzel text-2xl text-white">
-            {`Životy: ${actualHealth}`}
+            {`Životy: ${health}`}
           </Text>
           <SignButton sign="+" onPress={() => changeHealth('+')}></SignButton>
           <SignButton sign="-" onPress={() => changeHealth('-')}></SignButton>

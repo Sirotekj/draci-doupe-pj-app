@@ -8,6 +8,7 @@ import { filledEnemyFields } from '@/features/bestiary/enemy-fields';
 import {
   removeCombatSlot,
   selectCombatSlot,
+  updateCombatSlot,
   useCombat,
 } from '@/features/combat/combat-store';
 
@@ -158,7 +159,40 @@ export function CombatScreen() {
                 damageValue={damageValue?.value}
                 baseDefense={baseDefense?.value}
                 defenseValue={defenseValue?.value}
-                health={health?.value}
+                health={selectedSlot?.health ?? null}
+                rolledAttack={selectedSlot?.rolledAttack ?? null}
+                rolledDefense={selectedSlot?.rolledDefense ?? null}
+                rolledBaseDefense={selectedSlot?.rolledBaseDefense ?? null}
+                onRollAttack={(result) => {
+                  if (!selectedSlot) {
+                    return;
+                  }
+
+                  updateCombatSlot(selectedSlot.id, { rolledAttack: result });
+                }}
+                onRollDefense={(result) => {
+                  if (!selectedSlot) {
+                    return;
+                  }
+
+                  updateCombatSlot(selectedSlot.id, { rolledDefense: result });
+                }}
+                onRollBaseDefense={(result) => {
+                  if (!selectedSlot) {
+                    return;
+                  }
+
+                  updateCombatSlot(selectedSlot.id, {
+                    rolledBaseDefense: result,
+                  });
+                }}
+                onChangeHealth={(next) => {
+                  if (!selectedSlot) {
+                    return;
+                  }
+
+                  updateCombatSlot(selectedSlot.id, { health: next });
+                }}
               />
             </CombatSection>
           ) : null}

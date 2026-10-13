@@ -38,6 +38,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+function parseOptionalNumber(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  return null;
+}
+
 function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSlotId'> {
   if (!isRecord(value) || !Array.isArray(value.slots)) {
     return { slots: [], selectedSlotId: null };
@@ -52,7 +60,16 @@ function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSl
       return [];
     }
 
-    return [{ id: item.id, enemyId: item.enemyId }];
+    return [
+      {
+        id: item.id,
+        enemyId: item.enemyId,
+        health: parseOptionalNumber(item.health),
+        rolledAttack: parseOptionalNumber(item.rolledAttack),
+        rolledDefense: parseOptionalNumber(item.rolledDefense),
+        rolledBaseDefense: parseOptionalNumber(item.rolledBaseDefense),
+      },
+    ];
   });
 
   const selectedSlotId =
@@ -96,15 +113,36 @@ async function hydrate() {
 
 void hydrate();
 
-export function addEnemyToCombat(enemyId: string) {
+export function addEnemyToCombat(enemyId: string, health: number | null) {
   if (!snapshot.ready || enemyId.length === 0) {
     return;
   }
 
-  const slot = { id: createId(), enemyId };
+  const slot = {
+    id: createId(),
+    enemyId,
+    health: parseOptionalNumber(health),
+    rolledAttack: null,
+    rolledDefense: null,
+    rolledBaseDefense: null,
+  };
   commit({
     slots: [...snapshot.slots, slot],
     selectedSlotId: slot.id,
+  });
+}
+
+export function updateCombatSlot(
+  slotId: string,
+  patch: Partial<Omit<CombatSlot, 'id' | 'enemyId'>>,
+) {
+  if (!snapshot.ready || !snapshot.slots.some((slot) => slot.id === slotId)) {
+    return;
+  }
+
+  commit({
+    slots: snapshot.slots.map((slot) => (slot.id === slotId ? { ...slot, ...patch } : slot)),
+    selectedSlotId: snapshot.selectedSlotId,
   });
 }
 
