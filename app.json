@@ -14,9 +14,9 @@
       "package": "com.jakub.dracidoupepjapp",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/main-icon.png",
+        "backgroundImage": "./assets/images/main-icon.png",
+        "monochromeImage": "./assets/images/main-icon.png"
       },
       "predictiveBackGestureEnabled": false
     },
