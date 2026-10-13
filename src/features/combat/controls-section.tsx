@@ -81,7 +81,10 @@ export function ControlsSection({
   return (
     <>
       <View className="flex-1 flex-row justify-between gap-2">
-        <View className="border border-yellow w-2/5  aspect-[3/4]"></View>
+        <View
+          id="image"
+          className="border border-yellow w-2/5  aspect-[3/4]"
+        ></View>
         {attackValue && defenseValue && baseDefense && (
           <View className="flex-1">
             <View className="flex-1 flex-row justify-between items-center gap-2">
