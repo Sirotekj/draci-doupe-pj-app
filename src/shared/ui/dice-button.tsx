@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, View, type ViewStyle } from 'react-native';
+import { Pressable, View } from 'react-native';
 import Animated, {
   Easing,
   interpolate,
@@ -9,7 +9,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { colors } from '@/shared/theme/colors';
 import { Text } from '@/shared/ui/text';
 
 const side = 48;
@@ -25,14 +24,45 @@ type DiceButtonProps = {
   onRoll: (result: number) => void;
 };
 
-const borderBackground = (
-  Platform.OS === 'web'
-    ? { backgroundImage: colors.gradient }
-    : { experimental_backgroundImage: colors.gradient }
-) as ViewStyle;
-
 function randomFace(sides: DiceSides) {
   return Math.floor(Math.random() * sides) + 1;
+}
+
+const pipSlots = [
+  [],
+  [4],
+  [0, 8],
+  [0, 4, 8],
+  [0, 2, 6, 8],
+  [0, 2, 4, 6, 8],
+  [0, 2, 3, 5, 6, 8],
+] as const;
+
+function DicePips({ value }: { value: number }) {
+  const filled = new Set<number>(pipSlots[value] ?? []);
+
+  return (
+    <View className="flex-1 justify-between p-1">
+      {[0, 1, 2].map((row) => (
+        <View
+          key={row}
+          className="flex-1 flex-row items-center justify-between"
+        >
+          {[0, 1, 2].map((column) => {
+            const index = row * 3 + column;
+
+            return (
+              <View key={column} className="flex-1 items-center justify-center">
+                {filled.has(index) ? (
+                  <View className="h-2 w-2 rounded-full bg-black" />
+                ) : null}
+              </View>
+            );
+          })}
+        </View>
+      ))}
+    </View>
+  );
 }
 
 export function DiceButton({ sides, onRoll }: DiceButtonProps) {
@@ -136,17 +166,25 @@ export function DiceButton({ sides, onRoll }: DiceButtonProps) {
         ]}
       >
         <View
-          className="flex-1 items-center justify-center px-small bg-[#FFC270]/50 border-[#000000]"
+          className={
+            sides === 6
+              ? 'flex-1 bg-[#FFC270]/50 border-[#000000]'
+              : 'flex-1 items-center justify-center bg-[#FFC270]/50 px-small border-[#000000]'
+          }
           style={{ borderRadius: radius - borderWidth }}
         >
-          <Text
-            adjustsFontSizeToFit
-            className="text-center text-3xl text-black"
-            minimumFontScale={0.5}
-            numberOfLines={1}
-          >
-            {face ?? sides}
-          </Text>
+          {sides === 6 ? (
+            <DicePips value={face ?? sides} />
+          ) : (
+            <Text
+              adjustsFontSizeToFit
+              className="text-center text-3xl text-black"
+              minimumFontScale={0.5}
+              numberOfLines={1}
+            >
+              {face ?? sides}
+            </Text>
+          )}
         </View>
       </Animated.View>
     </Pressable>
