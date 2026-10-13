@@ -3,6 +3,39 @@ import { Text, View } from 'react-native';
 import { DiceButton } from '@/shared/ui/dice-button';
 import { SignButton } from '@/shared/ui/sign-button';
 
+const maxRolls = 3;
+
+function rollTotal(rolls: number[]) {
+  return rolls.reduce((sum, roll) => sum + roll, 0);
+}
+
+function canRollAgain(rolls: number[]) {
+  return rolls.at(-1) === 6 && rolls.length < maxRolls;
+}
+
+function continueRoll(rolls: number[], face: number) {
+  if (canRollAgain(rolls)) {
+    return [...rolls, face];
+  }
+
+  return [face];
+}
+
+function rollText(rolls: number[], result: string) {
+  if (rolls.length === 0) {
+    return null;
+  }
+
+  return canRollAgain(rolls) ? (
+    <>
+      {result}
+      <Text className="font-sans text-yellow text-sm">(házíš znovu!)</Text>
+    </>
+  ) : (
+    result
+  );
+}
+
 type Props = {
   strength: string | undefined;
   dexterity: string | undefined;
@@ -11,12 +44,12 @@ type Props = {
   baseDefense: string | undefined;
   defenseValue: string | undefined;
   health: number | null;
-  rolledAttack: number | null;
-  rolledDefense: number | null;
-  rolledBaseDefense: number | null;
-  onRollAttack: (result: number) => void;
-  onRollDefense: (result: number) => void;
-  onRollBaseDefense: (result: number) => void;
+  attackRolls: number[];
+  defenseRolls: number[];
+  baseDefenseRolls: number[];
+  onRollAttack: (rolls: number[]) => void;
+  onRollDefense: (rolls: number[]) => void;
+  onRollBaseDefense: (rolls: number[]) => void;
   onChangeHealth: (health: number) => void;
 };
 
@@ -26,9 +59,9 @@ export function ControlsSection({
   baseDefense,
   defenseValue,
   health,
-  rolledAttack,
-  rolledDefense,
-  rolledBaseDefense,
+  attackRolls,
+  defenseRolls,
+  baseDefenseRolls,
   onRollAttack,
   onRollDefense,
   onRollBaseDefense,
@@ -51,40 +84,62 @@ export function ControlsSection({
         <View className="border border-yellow w-2/5  aspect-[3/4]"></View>
         {attackValue && defenseValue && baseDefense && (
           <View className="flex-1">
-            <View className="flex-1 flex-row justify-between items-center">
-              <View>
+            <View className="flex-1 flex-row justify-between items-center gap-2">
+              <View className="min-w-0 flex-1">
                 <Text className="mb-1 p-2 text-center rounded border text-yellow border-yellow/50">
                   Útok
                 </Text>
-                <Text className="font-cinzel text-white text-2xl">
-                  {rolledAttack !== null &&
-                    `${+attackValue + rolledAttack}${damageValue && ` + ${damageValue}`}`}
+                <Text className="font-cinzel text-white text-center text-2xl">
+                  {rollText(
+                    attackRolls,
+                    `${+attackValue + rollTotal(attackRolls)}${damageValue ? ` + ${damageValue}` : ''}`,
+                  )}
                 </Text>
               </View>
-              <DiceButton sides={6} onRoll={onRollAttack} />
+              <DiceButton
+                sides={6}
+                onRoll={(face) => {
+                  onRollAttack(continueRoll(attackRolls, face));
+                }}
+              />
             </View>
-            <View className="flex-1 flex-row justify-between items-center">
-              <View>
-                <Text className="mb-1 p-2 text-center  rounded border text-yellow border-yellow/50">
+            <View className="flex-1 flex-row justify-between items-center gap-2">
+              <View className="min-w-0 flex-1">
+                <Text className="mb-1 p-2 text-center rounded border text-yellow border-yellow/50">
                   Obrana
                 </Text>
-                <Text className="font-cinzel text-white text-2xl">
-                  {rolledDefense !== null && +defenseValue + rolledDefense}
+                <Text className="font-cinzel text-white text-center text-2xl">
+                  {rollText(
+                    defenseRolls,
+                    String(+defenseValue + rollTotal(defenseRolls)),
+                  )}
                 </Text>
               </View>
-              <DiceButton sides={6} onRoll={onRollDefense} />
+              <DiceButton
+                sides={6}
+                onRoll={(face) => {
+                  onRollDefense(continueRoll(defenseRolls, face));
+                }}
+              />
             </View>
-            <View className="flex-1 flex-row justify-between items-center">
-              <View>
+            <View className="flex-1 flex-row justify-between items-center gap-2">
+              <View className="min-w-0 flex-1">
                 <Text className="mb-1 p-2 text-center rounded border text-yellow border-yellow/50">
                   ZO
                 </Text>
-                <Text className="font-cinzel text-white text-2xl">
-                  {rolledBaseDefense !== null &&
-                    +baseDefense + rolledBaseDefense}
+                <Text className="font-cinzel text-white text-center text-2xl">
+                  {rollText(
+                    baseDefenseRolls,
+                    String(+baseDefense + rollTotal(baseDefenseRolls)),
+                  )}
                 </Text>
               </View>
-              <DiceButton sides={6} onRoll={onRollBaseDefense} />
+              <DiceButton
+                sides={6}
+                onRoll={(face) => {
+                  onRollBaseDefense(continueRoll(baseDefenseRolls, face));
+                }}
+              />
             </View>
           </View>
         )}

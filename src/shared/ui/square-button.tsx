@@ -48,7 +48,9 @@ export function SquareButton({
         borderRadius: radius,
         padding: borderWidth,
         overflow: 'hidden',
-        ...(active ? { backgroundColor: colors.yellow } : borderBackground),
+        ...(active
+          ? { backgroundColor: `${colors.yellow}40` }
+          : borderBackground),
       }}
     >
       <View

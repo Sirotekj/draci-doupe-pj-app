@@ -46,6 +46,20 @@ function parseOptionalNumber(value: unknown) {
   return null;
 }
 
+function parseRolls(value: unknown, legacy: unknown) {
+  if (Array.isArray(value)) {
+    return value
+      .filter((roll): roll is number => typeof roll === 'number' && roll >= 1 && roll <= 6)
+      .slice(0, 3);
+  }
+
+  if (typeof legacy === 'number' && legacy >= 1 && legacy <= 6) {
+    return [legacy];
+  }
+
+  return [];
+}
+
 function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSlotId'> {
   if (!isRecord(value) || !Array.isArray(value.slots)) {
     return { slots: [], selectedSlotId: null };
@@ -66,9 +80,10 @@ function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSl
         enemyId: item.enemyId,
         health: parseOptionalNumber(item.health),
         initiative: parseOptionalNumber(item.initiative),
-        rolledAttack: parseOptionalNumber(item.rolledAttack),
-        rolledDefense: parseOptionalNumber(item.rolledDefense),
-        rolledBaseDefense: parseOptionalNumber(item.rolledBaseDefense),
+        attackRolls: parseRolls(item.attackRolls, item.rolledAttack),
+        defenseRolls: parseRolls(item.defenseRolls, item.rolledDefense),
+        baseDefenseRolls: parseRolls(item.baseDefenseRolls, item.rolledBaseDefense),
+        played: item.played === true,
       },
     ];
   });
@@ -142,9 +157,10 @@ export function addEnemyToCombat(enemyId: string, health: number | null) {
     enemyId,
     health: parseOptionalNumber(health),
     initiative: null,
-    rolledAttack: null,
-    rolledDefense: null,
-    rolledBaseDefense: null,
+    attackRolls: [],
+    defenseRolls: [],
+    baseDefenseRolls: [],
+    played: false,
   };
   commit({
     slots: orderByInitiative([...snapshot.slots, slot]),

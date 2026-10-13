@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import { clearAccess } from '@/features/access/access-store';
 import { useBestiary } from '@/features/bestiary/bestiary-store';
@@ -144,6 +144,7 @@ export function CombatScreen() {
                   bestiary.enemies.find((enemy) => enemy.id === slot.enemyId)
                     ?.name ?? ''
                 }
+                done={slot.played}
                 onPress={() => {
                   selectCombatSlot(slot.id);
                 }}
@@ -174,9 +175,29 @@ export function CombatScreen() {
                   {name?.value}
                 </Text>
 
-                <Text className="p-2 rounded border border-yellow/50 text-yellow">
-                  Ještě nehrál
-                </Text>
+                <Pressable
+                  id="done"
+                  accessibilityRole="button"
+                  className="rounded border border-yellow/50 p-2"
+                  style={{
+                    backgroundColor: selectedSlot?.played
+                      ? `${colors.yellow}40`
+                      : 'transparent',
+                  }}
+                  onPress={() => {
+                    if (!selectedSlot) {
+                      return;
+                    }
+
+                    updateCombatSlot(selectedSlot.id, {
+                      played: !selectedSlot.played,
+                    });
+                  }}
+                >
+                  <Text className="text-yellow">
+                    {selectedSlot?.played ? 'už hrál' : 'Ještě nehrál'}
+                  </Text>
+                </Pressable>
               </View>
               <View className="flex-row items-center justify-center gap-2">
                 <Text className="rounded border border-yellow/50 p-2 text-yellow">
@@ -200,28 +221,26 @@ export function CombatScreen() {
                 baseDefense={baseDefense?.value}
                 defenseValue={defenseValue?.value}
                 health={selectedSlot?.health ?? null}
-                rolledAttack={selectedSlot?.rolledAttack ?? null}
-                rolledDefense={selectedSlot?.rolledDefense ?? null}
-                rolledBaseDefense={selectedSlot?.rolledBaseDefense ?? null}
-                onRollAttack={(result) => {
+                attackRolls={selectedSlot?.attackRolls ?? []}
+                defenseRolls={selectedSlot?.defenseRolls ?? []}
+                baseDefenseRolls={selectedSlot?.baseDefenseRolls ?? []}
+                onRollAttack={(rolls) => {
                   if (!selectedSlot) {
                     return;
                   }
-                  updateCombatSlot(selectedSlot.id, { rolledAttack: result });
+                  updateCombatSlot(selectedSlot.id, { attackRolls: rolls });
                 }}
-                onRollDefense={(result) => {
+                onRollDefense={(rolls) => {
                   if (!selectedSlot) {
                     return;
                   }
-                  updateCombatSlot(selectedSlot.id, { rolledDefense: result });
+                  updateCombatSlot(selectedSlot.id, { defenseRolls: rolls });
                 }}
-                onRollBaseDefense={(result) => {
+                onRollBaseDefense={(rolls) => {
                   if (!selectedSlot) {
                     return;
                   }
-                  updateCombatSlot(selectedSlot.id, {
-                    rolledBaseDefense: result,
-                  });
+                  updateCombatSlot(selectedSlot.id, { baseDefenseRolls: rolls });
                 }}
                 onChangeHealth={(next) => {
                   if (!selectedSlot) {
