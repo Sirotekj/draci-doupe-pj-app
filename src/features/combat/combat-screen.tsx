@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import { clearAccess } from '@/features/access/access-store';
@@ -32,6 +32,18 @@ function FilledEnemyField({ field }: { field: FilledField | undefined }) {
 
   return (
     <View className="flex-1 flex-row gap-1">
+      <Text className="text-yellow">{field.label}:</Text>
+      <Text className="text-white">{field.value}</Text>
+    </View>
+  );
+}
+
+function FilledPlainTextField({ field }: { field: FilledField | undefined }) {
+  if (!field) {
+    return null;
+  }
+  return (
+    <View className="flex-1 gap-2">
       <Text className="text-yellow">{field.label}:</Text>
       <Text className="text-white">{field.value}</Text>
     </View>
@@ -88,9 +100,6 @@ export function CombatScreen() {
   const notes = findFilledField(filledFields, 'notes');
   const description = findFilledField(filledFields, 'description');
 
-  const [rolledSix, setRolledSix] = useState<number | null>(null);
-  const [rolledTen, setRolledTen] = useState<number | null>(null);
-
   return (
     <Screen>
       <View className="flex-1 gap-4 pt-small">
@@ -134,6 +143,9 @@ export function CombatScreen() {
               <View className="flex-1 flex-row justify-between">
                 <Text className="font-cinzel text-xl text-yellow">
                   {name?.value}
+                </Text>
+                <Text className="p-2 rounded border border-yellow text-yellow">
+                  Iniciativa
                 </Text>
                 <Text className="p-2 rounded border border-yellow text-yellow">
                   Ještě nehrál
@@ -197,17 +209,17 @@ export function CombatScreen() {
           ) : null}
           {habitat ? (
             <CombatSection>
-              <FilledEnemyField field={habitat} />
+              <FilledPlainTextField field={habitat} />
             </CombatSection>
           ) : null}
           {notes ? (
             <CombatSection>
-              <FilledEnemyField field={notes} />
+              <FilledPlainTextField field={notes} />
             </CombatSection>
           ) : null}
           {description ? (
             <CombatSection>
-              <FilledEnemyField field={description} />
+              <FilledPlainTextField field={description} />
             </CombatSection>
           ) : null}
           {ready && selectedSlot ? (
