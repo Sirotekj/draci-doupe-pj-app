@@ -39,7 +39,7 @@ export function SignButton({ sign, onPress }: SignButtonProps) {
       >
         <Text
           adjustsFontSizeToFit
-          className="text-center text-yellow"
+          className="text-center text-yellow mt-1.5"
           minimumFontScale={0.5}
           numberOfLines={1}
         >

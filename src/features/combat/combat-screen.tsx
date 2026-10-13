@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import { clearAccess } from '@/features/access/access-store';
@@ -12,6 +12,7 @@ import {
 } from '@/features/combat/combat-store';
 
 import { CombatSection } from './combat-section';
+import { ControlsSection } from './controls-section';
 
 import { Button } from '@/shared/ui/button';
 import { Screen } from '@/shared/ui/screen';
@@ -87,6 +88,9 @@ export function CombatScreen() {
   const notes = findFilledField(filledFields, 'notes');
   const description = findFilledField(filledFields, 'description');
 
+  const [rolledSix, setRolledSix] = useState<number | null>(null);
+  const [rolledTen, setRolledTen] = useState<number | null>(null);
+
   return (
     <Screen>
       <View className="flex-1 gap-4 pt-small">
@@ -94,7 +98,7 @@ export function CombatScreen() {
           <ScrollView
             ref={scroller}
             horizontal
-            contentContainerClassName="gap-2 min-w-full p-small border-t border-b border-yellow"
+            contentContainerClassName="gap-2 min-w-full p-small border-t border-b border-yellow/25"
             showsHorizontalScrollIndicator={false}
             style={{ flexGrow: 0 }}
           >
@@ -135,60 +139,15 @@ export function CombatScreen() {
                   Ještě nehrál
                 </Text>
               </View>
-              <View className="flex-1 flex-row justify-between gap-2">
-                <View className="border border-yellow w-2/5  aspect-[3/4]"></View>
-                <View className="flex-1 justify-between items-center">
-                  <Text className="w-1/2 p-2 text-center rounded border text-yellow border-yellow">
-                    Útok
-                  </Text>
-                  <Text className="w-1/2 p-2 text-center  rounded border text-yellow border-yellow">
-                    Obrana
-                  </Text>
-                  <Text className="w-1/2 p-2 text-center rounded border text-yellow border-yellow">
-                    ZO
-                  </Text>
-                </View>
-              </View>
-
-              <View className="py-big flex flex-row justify-between gap-2">
-                <View>
-                  <View className="flex-1 flex-row items-center gap-2">
-                    <View className="w-12 h-12 justify-center rounded border border-yellow">
-                      <Text className="text-center text-yellow">Ú.Č.</Text>
-                    </View>
-                    <Text className="font-cinzel text-2xl text-white">
-                      {attackValue?.value + '+' + damageValue?.value}
-                    </Text>
-                  </View>
-                </View>
-
-                <View>
-                  <View className="flex-1 flex-row items-center gap-2">
-                    <View className="w-12 h-12 justify-center rounded border border-yellow">
-                      <Text className="text-center text-yellow">O.Č.</Text>
-                    </View>
-                    <Text className="font-cinzel text-2xl text-white">
-                      {defenseValue?.value}
-                    </Text>
-                  </View>
-                </View>
-                <View>
-                  <View className="flex-1 flex-row items-center gap-2">
-                    <View className="w-12 h-12 justify-center rounded border border-yellow">
-                      <Text className="text-center text-yellow">ZO</Text>
-                    </View>
-                    <Text className="font-cinzel text-2xl text-white">
-                      {baseDefense?.value}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              <View className="flex-1 justify-center">
-                <Text className="font-cinzel text-2xl text-white">
-                  {health?.label}:{health?.value}
-                </Text>
-              </View>
+              <ControlsSection
+                strength={strength?.value}
+                dexterity={dexterity?.value}
+                attackValue={attackValue?.value}
+                damageValue={damageValue?.value}
+                baseDefense={baseDefense?.value}
+                defenseValue={defenseValue?.value}
+                health={health?.value}
+              />
             </CombatSection>
           ) : null}
           {movement ||
