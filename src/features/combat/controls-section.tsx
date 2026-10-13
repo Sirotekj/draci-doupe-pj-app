@@ -38,13 +38,10 @@ export function ControlsSection({
     if (health === null) {
       return;
     }
-
     const next = sign === '+' ? health + 1 : health - 1;
-
     if (next < 0) {
       return;
     }
-
     onChangeHealth(next);
   }
 
@@ -83,7 +80,8 @@ export function ControlsSection({
                   ZO
                 </Text>
                 <Text className="font-cinzel text-white text-2xl">
-                  {rolledBaseDefense !== null && +baseDefense + rolledBaseDefense}
+                  {rolledBaseDefense !== null &&
+                    +baseDefense + rolledBaseDefense}
                 </Text>
               </View>
               <DiceButton sides={6} onRoll={onRollBaseDefense} />

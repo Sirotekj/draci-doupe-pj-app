@@ -9,10 +9,15 @@ const borderWidth = 1;
 
 type SquareButtonProps = {
   value: '+' | number;
+  name?: string;
   onPress: () => void;
   active?: boolean;
   done?: boolean;
 };
+
+function nameMark(name: string) {
+  return name.trim().slice(0, 2);
+}
 
 const doneBackground = `${colors.yellow}40`;
 
@@ -24,14 +29,17 @@ const borderBackground = (
 
 export function SquareButton({
   value,
+  name = '',
   onPress,
   active = false,
   done = false,
 }: SquareButtonProps) {
+  const mark = value === '+' ? '+' : nameMark(name);
+
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={String(value)}
+      accessibilityLabel={name ? `${value} ${name}` : String(value)}
       accessibilityState={{ selected: active }}
       onPress={onPress}
       style={{
@@ -44,20 +52,27 @@ export function SquareButton({
       }}
     >
       <View
-        className="flex-1 items-center justify-center px-small"
+        className="relative flex-1"
         style={{
           borderRadius: radius - borderWidth,
           backgroundColor: done ? doneBackground : colors.black,
         }}
       >
-        <Text
-          adjustsFontSizeToFit
-          className="text-center text-yellow mt-1.5"
-          minimumFontScale={0.5}
-          numberOfLines={1}
-        >
-          {value}
-        </Text>
+        {typeof value === 'number' ? (
+          <Text className="absolute left-1 top-0.5 text-xs text-yellow">
+            {value}
+          </Text>
+        ) : null}
+        <View className="flex-1 items-center justify-center px-small">
+          <Text
+            adjustsFontSizeToFit
+            className="text-center text-yellow"
+            minimumFontScale={0.5}
+            numberOfLines={1}
+          >
+            {mark}
+          </Text>
+        </View>
       </View>
     </Pressable>
   );

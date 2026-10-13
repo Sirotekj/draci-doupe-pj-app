@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, TextInput, View } from 'react-native';
 
 import { clearAccess } from '@/features/access/access-store';
 import { useBestiary } from '@/features/bestiary/bestiary-store';
@@ -11,14 +11,17 @@ import {
   updateCombatSlot,
   useCombat,
 } from '@/features/combat/combat-store';
-
-import { CombatSection } from './combat-section';
-import { ControlsSection } from './controls-section';
-
+import { colors } from '@/shared/theme/colors';
+import { defaultFont } from '@/shared/theme/typography';
 import { Button } from '@/shared/ui/button';
+import { DiceButton } from '@/shared/ui/dice-button';
 import { Screen } from '@/shared/ui/screen';
 import { SquareButton } from '@/shared/ui/square-button';
 import { Text } from '@/shared/ui/text';
+
+import { CombatSection } from './combat-section';
+import { ControlsSection } from './controls-section';
+import { MainAttributesSection } from './main-attributes-section';
 
 type FilledField = ReturnType<typeof filledEnemyFields>[number];
 
@@ -71,6 +74,27 @@ export function CombatScreen() {
     scroller.current?.scrollToEnd({ animated: false });
   }, [ready, combat.slots.length]);
 
+  const initiativeValue =
+    selectedSlot?.initiative == null ? '' : String(selectedSlot.initiative);
+
+  function onRollInitiative(result: number) {
+    if (!selectedSlot) {
+      return;
+    }
+
+    updateCombatSlot(selectedSlot.id, { initiative: result });
+  }
+
+  function onChangeInitiative(next: string) {
+    if (!selectedSlot || (next !== '' && !/^\d+$/.test(next))) {
+      return;
+    }
+
+    updateCombatSlot(selectedSlot.id, {
+      initiative: next === '' ? null : Number(next),
+    });
+  }
+
   const filledFields =
     ready && selectedEnemy ? filledEnemyFields(selectedEnemy) : [];
   const name = findFilledField(filledFields, 'name');
@@ -116,6 +140,10 @@ export function CombatScreen() {
               <SquareButton
                 key={slot.id}
                 active={slot.id === combat.selectedSlotId}
+                name={
+                  bestiary.enemies.find((enemy) => enemy.id === slot.enemyId)
+                    ?.name ?? ''
+                }
                 onPress={() => {
                   selectCombatSlot(slot.id);
                 }}
@@ -142,15 +170,27 @@ export function CombatScreen() {
           defenseValue ? (
             <CombatSection>
               <View className="flex-1 flex-row justify-between">
-                <Text className="font-cinzel text-xl text-yellow">
+                <Text className="font-cinzel text-2xl text-yellow">
                   {name?.value}
                 </Text>
-                <Text className="p-2 rounded border border-yellow text-yellow">
-                  Iniciativa
-                </Text>
-                <Text className="p-2 rounded border border-yellow text-yellow">
+
+                <Text className="p-2 rounded border border-yellow/50 text-yellow">
                   Ještě nehrál
                 </Text>
+              </View>
+              <View className="flex-row items-center justify-center gap-2">
+                <Text className="rounded border border-yellow/50 p-2 text-yellow">
+                  Iniciativa
+                </Text>
+                <TextInput
+                  accessibilityLabel="Iniciativa"
+                  className="w-12 rounded border border-yellow py-2 text-center text-yellow"
+                  keyboardType="number-pad"
+                  onChangeText={onChangeInitiative}
+                  style={{ fontFamily: defaultFont, color: colors.yellow }}
+                  value={initiativeValue}
+                />
+                <DiceButton sides={6} onRoll={onRollInitiative} />
               </View>
               <ControlsSection
                 strength={strength?.value}
@@ -167,21 +207,18 @@ export function CombatScreen() {
                   if (!selectedSlot) {
                     return;
                   }
-
                   updateCombatSlot(selectedSlot.id, { rolledAttack: result });
                 }}
                 onRollDefense={(result) => {
                   if (!selectedSlot) {
                     return;
                   }
-
                   updateCombatSlot(selectedSlot.id, { rolledDefense: result });
                 }}
                 onRollBaseDefense={(result) => {
                   if (!selectedSlot) {
                     return;
                   }
-
                   updateCombatSlot(selectedSlot.id, {
                     rolledBaseDefense: result,
                   });
@@ -190,7 +227,6 @@ export function CombatScreen() {
                   if (!selectedSlot) {
                     return;
                   }
-
                   updateCombatSlot(selectedSlot.id, { health: next });
                 }}
               />
@@ -204,13 +240,15 @@ export function CombatScreen() {
           intelligence ||
           charisma ? (
             <CombatSection>
-              <FilledEnemyField field={movement} />
-              <FilledEnemyField field={size} />
-              <FilledEnemyField field={strength} />
-              <FilledEnemyField field={dexterity} />
-              <FilledEnemyField field={constitution} />
-              <FilledEnemyField field={intelligence} />
-              <FilledEnemyField field={charisma} />
+              <MainAttributesSection
+                movement={movement?.value}
+                size={size?.value}
+                strength={strength?.value}
+                dexterity={dexterity?.value}
+                constitution={constitution?.value}
+                intelligence={intelligence?.value}
+                charisma={charisma?.value}
+              />
             </CombatSection>
           ) : null}
           {level ||

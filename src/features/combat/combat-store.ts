@@ -65,6 +65,7 @@ function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSl
         id: item.id,
         enemyId: item.enemyId,
         health: parseOptionalNumber(item.health),
+        initiative: parseOptionalNumber(item.initiative),
         rolledAttack: parseOptionalNumber(item.rolledAttack),
         rolledDefense: parseOptionalNumber(item.rolledDefense),
         rolledBaseDefense: parseOptionalNumber(item.rolledBaseDefense),
@@ -78,7 +79,25 @@ function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSl
       ? value.selectedSlotId
       : null;
 
-  return { slots, selectedSlotId };
+  return { slots: orderByInitiative(slots), selectedSlotId };
+}
+
+function orderByInitiative(slots: CombatSlot[]) {
+  return [...slots].sort((left, right) => {
+    if (left.initiative === right.initiative) {
+      return 0;
+    }
+
+    if (left.initiative === null) {
+      return -1;
+    }
+
+    if (right.initiative === null) {
+      return 1;
+    }
+
+    return left.initiative - right.initiative;
+  });
 }
 
 function commit(next: Pick<CombatSnapshot, 'slots' | 'selectedSlotId'>) {
@@ -122,12 +141,13 @@ export function addEnemyToCombat(enemyId: string, health: number | null) {
     id: createId(),
     enemyId,
     health: parseOptionalNumber(health),
+    initiative: null,
     rolledAttack: null,
     rolledDefense: null,
     rolledBaseDefense: null,
   };
   commit({
-    slots: [...snapshot.slots, slot],
+    slots: orderByInitiative([...snapshot.slots, slot]),
     selectedSlotId: slot.id,
   });
 }
@@ -140,8 +160,12 @@ export function updateCombatSlot(
     return;
   }
 
+  const slots = snapshot.slots.map((slot) =>
+    slot.id === slotId ? { ...slot, ...patch } : slot,
+  );
+
   commit({
-    slots: snapshot.slots.map((slot) => (slot.id === slotId ? { ...slot, ...patch } : slot)),
+    slots: 'initiative' in patch ? orderByInitiative(slots) : slots,
     selectedSlotId: snapshot.selectedSlotId,
   });
 }
