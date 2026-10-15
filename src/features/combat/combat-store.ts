@@ -2,7 +2,10 @@ import { useSyncExternalStore } from 'react';
 
 import type { CombatSlot } from '@/features/combat/types';
 import { createId } from '@/shared/id';
-import { createJsonWriter, readStoredJson } from '@/shared/storage/json-storage';
+import {
+  createJsonWriter,
+  readStoredJson,
+} from '@/shared/storage/json-storage';
 
 const storageKey = 'draci-doupe.combat';
 
@@ -12,7 +15,11 @@ type CombatSnapshot = {
   selectedSlotId: string | null;
 };
 
-let snapshot: CombatSnapshot = { ready: false, slots: [], selectedSlotId: null };
+let snapshot: CombatSnapshot = {
+  ready: false,
+  slots: [],
+  selectedSlotId: null,
+};
 let canPersist = false;
 const listeners = new Set<() => void>();
 const writeCombat = createJsonWriter(storageKey);
@@ -49,7 +56,10 @@ function parseOptionalNumber(value: unknown) {
 function parseRolls(value: unknown, legacy: unknown) {
   if (Array.isArray(value)) {
     return value
-      .filter((roll): roll is number => typeof roll === 'number' && roll >= 1 && roll <= 6)
+      .filter(
+        (roll): roll is number =>
+          typeof roll === 'number' && roll >= 1 && roll <= 6,
+      )
       .slice(0, 3);
   }
 
@@ -60,13 +70,19 @@ function parseRolls(value: unknown, legacy: unknown) {
   return [];
 }
 
-function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSlotId'> {
+function parseCombat(
+  value: unknown,
+): Pick<CombatSnapshot, 'slots' | 'selectedSlotId'> {
   if (!isRecord(value) || !Array.isArray(value.slots)) {
     return { slots: [], selectedSlotId: null };
   }
 
   const slots = value.slots.flatMap((item) => {
-    if (!isRecord(item) || typeof item.id !== 'string' || typeof item.enemyId !== 'string') {
+    if (
+      !isRecord(item) ||
+      typeof item.id !== 'string' ||
+      typeof item.enemyId !== 'string'
+    ) {
       return [];
     }
 
@@ -79,10 +95,14 @@ function parseCombat(value: unknown): Pick<CombatSnapshot, 'slots' | 'selectedSl
         id: item.id,
         enemyId: item.enemyId,
         health: parseOptionalNumber(item.health),
+        mana: parseOptionalNumber(item.mana),
         initiative: parseOptionalNumber(item.initiative),
         attackRolls: parseRolls(item.attackRolls, item.rolledAttack),
         defenseRolls: parseRolls(item.defenseRolls, item.rolledDefense),
-        baseDefenseRolls: parseRolls(item.baseDefenseRolls, item.rolledBaseDefense),
+        baseDefenseRolls: parseRolls(
+          item.baseDefenseRolls,
+          item.rolledBaseDefense,
+        ),
         played: item.played === true,
       },
     ];
@@ -147,7 +167,11 @@ async function hydrate() {
 
 void hydrate();
 
-export function addEnemyToCombat(enemyId: string, health: number | null) {
+export function addEnemyToCombat(
+  enemyId: string,
+  health: number | null,
+  mana: number | null,
+) {
   if (!snapshot.ready || enemyId.length === 0) {
     return;
   }
@@ -156,6 +180,7 @@ export function addEnemyToCombat(enemyId: string, health: number | null) {
     id: createId(),
     enemyId,
     health: parseOptionalNumber(health),
+    mana: parseOptionalNumber(mana),
     initiative: null,
     attackRolls: [],
     defenseRolls: [],
@@ -199,7 +224,8 @@ export function removeCombatSlot(slotId: string) {
 
   commit({
     slots,
-    selectedSlotId: snapshot.selectedSlotId === slotId ? null : snapshot.selectedSlotId,
+    selectedSlotId:
+      snapshot.selectedSlotId === slotId ? null : snapshot.selectedSlotId,
   });
 }
 
@@ -214,7 +240,9 @@ export function removeEnemyFromCombat(enemyId: string) {
     return;
   }
 
-  const selectedSlotId = slots.some((slot) => slot.id === snapshot.selectedSlotId)
+  const selectedSlotId = slots.some(
+    (slot) => slot.id === snapshot.selectedSlotId,
+  )
     ? snapshot.selectedSlotId
     : null;
 

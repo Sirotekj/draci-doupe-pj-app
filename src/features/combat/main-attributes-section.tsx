@@ -18,6 +18,7 @@ export function MainAttributesSection({
   intelligence,
   charisma,
 }: Props) {
+  const textStyle = 'font-cinzel text-white text-xl text-center';
   const bonusTable: Record<string, string> = {
     '1': '-5',
     '2': '-4',
@@ -50,14 +51,37 @@ export function MainAttributesSection({
   return (
     <>
       <View className="flex-1 justify-center gap-2">
-        <Text className="font-cinzel text-white text-xl text-center">{`Pohyblivost: ${movement}`}</Text>
-        <Text className="font-cinzel text-white text-xl text-center">{`Velikost: ${size}`}</Text>
+        {movement && (
+          <Text className={textStyle}>{`Pohyblivost: ${movement}`}</Text>
+        )}
+        {size && <Text className={textStyle}>{`Velikost: ${size}`}</Text>}
       </View>
       <View className="flex-1 justify-center gap-2">
-        <Text className="font-cinzel text-white text-xl text-center">{`Síla: ${strength} | ${getBonus(strength)}`}</Text>
-        <Text className="font-cinzel text-white text-xl text-center">{`Obratnost: ${strength} | ${getBonus(dexterity)}`}</Text>
-        <Text className="font-cinzel text-white text-xl text-center">{`odolnost: ${strength} | ${getBonus(constitution)}`}</Text>
-        <Text className="font-cinzel text-white text-xl text-center">{`Inteligence: ${strength} | ${getBonus(intelligence)}`}</Text>
+        {strength && (
+          <Text
+            className={textStyle}
+          >{`Síla: ${strength} | ${getBonus(strength)}`}</Text>
+        )}
+        {dexterity && (
+          <Text
+            className={textStyle}
+          >{`Obratnost: ${dexterity} | ${getBonus(dexterity)}`}</Text>
+        )}
+        {constitution && (
+          <Text
+            className={textStyle}
+          >{`Odolnost: ${constitution} | ${getBonus(constitution)}`}</Text>
+        )}
+        {intelligence && (
+          <Text
+            className={textStyle}
+          >{`Inteligence: ${intelligence} | ${getBonus(intelligence)}`}</Text>
+        )}
+        {charisma && (
+          <Text
+            className={textStyle}
+          >{`Charisma: ${charisma} | ${getBonus(charisma)}`}</Text>
+        )}
       </View>
     </>
   );

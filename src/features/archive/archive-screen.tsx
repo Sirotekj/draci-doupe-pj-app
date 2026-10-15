@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
-import { clearAccess } from '@/features/access/access-store';
 import { useBestiary } from '@/features/bestiary/bestiary-store';
 import { addEnemyToCombat, useCombat } from '@/features/combat/combat-store';
 import { Button } from '@/shared/ui/button';
@@ -19,7 +18,7 @@ export function ArchiveScreen() {
         {ready ? (
           <>
             <Button
-              text="Nový nepřítel"
+              text="Nový nepřítel / postava"
               onPress={() => {
                 router.push('/enemy');
               }}
@@ -44,7 +43,7 @@ export function ArchiveScreen() {
                   <Button
                     text="Přidat"
                     onPress={() => {
-                      addEnemyToCombat(enemy.id, enemy.health);
+                      addEnemyToCombat(enemy.id, enemy.health, enemy.mana);
                       router.navigate('/combat');
                     }}
                   />
@@ -53,13 +52,13 @@ export function ArchiveScreen() {
             )}
           </>
         ) : null}
-        <Button
+        {/*<Button
           text="Introduction"
           onPress={() => {
             clearAccess();
             router.replace('/');
           }}
-        />
+        />*/}
       </ScrollView>
     </Screen>
   );

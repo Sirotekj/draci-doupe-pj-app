@@ -230,6 +230,14 @@ export function EnemyFormScreen() {
                   }}
                   value={values.health}
                 />
+                <FormField
+                  kind="number"
+                  label="Mana/Přízeň"
+                  onChangeText={(next) => {
+                    changeText('mana', next, 'number');
+                  }}
+                  value={values.mana}
+                />
               </View>
               <View className={sectionClassName}>
                 <FormField

@@ -2,7 +2,6 @@ import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { Pressable, ScrollView, TextInput, View } from 'react-native';
 
-import { clearAccess } from '@/features/access/access-store';
 import { useBestiary } from '@/features/bestiary/bestiary-store';
 import { filledEnemyFields } from '@/features/bestiary/enemy-fields';
 import {
@@ -99,6 +98,7 @@ export function CombatScreen() {
     ready && selectedEnemy ? filledEnemyFields(selectedEnemy) : [];
   const name = findFilledField(filledFields, 'name');
   const health = findFilledField(filledFields, 'health');
+  const mana = findFilledField(filledFields, 'mana');
   const attackValue = findFilledField(filledFields, 'attackValue');
   const damageValue = findFilledField(filledFields, 'damageValue');
   const baseDefense = findFilledField(filledFields, 'baseDefense');
@@ -165,6 +165,7 @@ export function CombatScreen() {
         >
           {name ||
           health ||
+          mana ||
           attackValue ||
           damageValue ||
           baseDefense ||
@@ -221,6 +222,7 @@ export function CombatScreen() {
                 baseDefense={baseDefense?.value}
                 defenseValue={defenseValue?.value}
                 health={selectedSlot?.health ?? null}
+                mana={selectedSlot?.mana ?? null}
                 attackRolls={selectedSlot?.attackRolls ?? []}
                 defenseRolls={selectedSlot?.defenseRolls ?? []}
                 baseDefenseRolls={selectedSlot?.baseDefenseRolls ?? []}
@@ -240,13 +242,21 @@ export function CombatScreen() {
                   if (!selectedSlot) {
                     return;
                   }
-                  updateCombatSlot(selectedSlot.id, { baseDefenseRolls: rolls });
+                  updateCombatSlot(selectedSlot.id, {
+                    baseDefenseRolls: rolls,
+                  });
                 }}
                 onChangeHealth={(next) => {
                   if (!selectedSlot) {
                     return;
                   }
                   updateCombatSlot(selectedSlot.id, { health: next });
+                }}
+                onChangeMana={(next) => {
+                  if (!selectedSlot) {
+                    return;
+                  }
+                  updateCombatSlot(selectedSlot.id, { mana: next });
                 }}
               />
             </CombatSection>
@@ -321,13 +331,13 @@ export function CombatScreen() {
               }}
             />
           ) : null}
-          <Button
+          {/*<Button
             text="Introduction"
             onPress={() => {
               clearAccess();
               router.replace('/');
             }}
-          />
+          />*/}
         </ScrollView>
       </View>
     </Screen>

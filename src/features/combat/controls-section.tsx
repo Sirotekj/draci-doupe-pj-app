@@ -44,6 +44,7 @@ type Props = {
   baseDefense: string | undefined;
   defenseValue: string | undefined;
   health: number | null;
+  mana: number | null;
   attackRolls: number[];
   defenseRolls: number[];
   baseDefenseRolls: number[];
@@ -51,6 +52,7 @@ type Props = {
   onRollDefense: (rolls: number[]) => void;
   onRollBaseDefense: (rolls: number[]) => void;
   onChangeHealth: (health: number) => void;
+  onChangeMana: (mana: number) => void;
 };
 
 export function ControlsSection({
@@ -59,6 +61,7 @@ export function ControlsSection({
   baseDefense,
   defenseValue,
   health,
+  mana,
   attackRolls,
   defenseRolls,
   baseDefenseRolls,
@@ -66,6 +69,7 @@ export function ControlsSection({
   onRollDefense,
   onRollBaseDefense,
   onChangeHealth,
+  onChangeMana,
 }: Props) {
   function changeHealth(sign: '+' | '-') {
     if (health === null) {
@@ -76,6 +80,16 @@ export function ControlsSection({
       return;
     }
     onChangeHealth(next);
+  }
+  function changeMana(sign: '+' | '-') {
+    if (mana === null) {
+      return;
+    }
+    const next = sign === '+' ? mana + 1 : mana - 1;
+    if (next < 0) {
+      return;
+    }
+    onChangeMana(next);
   }
 
   return (
@@ -188,6 +202,15 @@ export function ControlsSection({
           </Text>
           <SignButton sign="+" onPress={() => changeHealth('+')}></SignButton>
           <SignButton sign="-" onPress={() => changeHealth('-')}></SignButton>
+        </View>
+      )}
+      {mana && (
+        <View className="flex-1 flex-row justify-center gap-2">
+          <Text className="font-cinzel text-2xl text-white">
+            {`Mana/Přízeň: ${mana}`}
+          </Text>
+          <SignButton sign="+" onPress={() => changeMana('+')}></SignButton>
+          <SignButton sign="-" onPress={() => changeMana('-')}></SignButton>
         </View>
       )}
     </>

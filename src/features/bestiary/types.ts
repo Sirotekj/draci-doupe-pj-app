@@ -2,6 +2,7 @@ export type Enemy = {
   id: string;
   name: string;
   health: number | null;
+  mana: number | null;
   level: number | null;
   divinePower: number | null;
   challengeRating: string | null;

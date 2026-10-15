@@ -7,12 +7,17 @@ export type EnemyFormValues = {
 type TextKind = 'text' | 'longText' | 'number';
 
 type EnemyField =
-  | { key: Exclude<keyof EnemyFormValues, 'isPublic'>; label: string; kind: TextKind }
+  | {
+      key: Exclude<keyof EnemyFormValues, 'isPublic'>;
+      label: string;
+      kind: TextKind;
+    }
   | { key: 'isPublic'; label: string; kind: 'boolean' };
 
 export const enemyFields = [
   { key: 'name', label: 'Jméno', kind: 'text' },
   { key: 'health', label: 'Životy', kind: 'number' },
+  { key: 'mana', label: 'Mana/Přízeň', kind: 'number' },
   { key: 'level', label: 'Úroveň', kind: 'number' },
   { key: 'divinePower', label: 'Vyšší moc', kind: 'number' },
   { key: 'challengeRating', label: 'Výzva', kind: 'text' },
@@ -73,7 +78,11 @@ function optionalNumber(value: unknown) {
 }
 
 export function enemyFromUnknown(value: unknown): Enemy | null {
-  if (!isRecord(value) || typeof value.id !== 'string' || value.id.length === 0) {
+  if (
+    !isRecord(value) ||
+    typeof value.id !== 'string' ||
+    value.id.length === 0
+  ) {
     return null;
   }
 
@@ -100,6 +109,7 @@ export function detailsFromUnknown(value: unknown): EnemyDetails | null {
   return {
     name,
     health: optionalNumber(value.health),
+    mana: optionalNumber(value.mana),
     level: optionalNumber(value.level),
     divinePower: optionalNumber(value.divinePower),
     challengeRating: optionalString(value.challengeRating),
@@ -136,6 +146,7 @@ export function enemyToForm(enemy: Enemy | null): EnemyFormValues {
   return {
     name: enemy?.name ?? '',
     health: textValue(enemy?.health ?? null),
+    mana: textValue(enemy?.mana ?? null),
     level: textValue(enemy?.level ?? null),
     divinePower: textValue(enemy?.divinePower ?? null),
     challengeRating: enemy?.challengeRating ?? '',
@@ -196,7 +207,12 @@ export function isNumberDraft(value: string) {
 function formNumber(value: string) {
   const trimmed = value.trim();
 
-  if (trimmed === '' || trimmed === '-' || trimmed === '.' || trimmed === '-.') {
+  if (
+    trimmed === '' ||
+    trimmed === '-' ||
+    trimmed === '.' ||
+    trimmed === '-.'
+  ) {
     return null;
   }
 

@@ -2,6 +2,7 @@ export type CombatSlot = {
   id: string;
   enemyId: string;
   health: number | null;
+  mana: number | null;
   initiative: number | null;
   attackRolls: number[];
   defenseRolls: number[];
