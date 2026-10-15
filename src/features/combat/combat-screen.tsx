@@ -223,6 +223,7 @@ export function CombatScreen() {
                 defenseValue={defenseValue?.value}
                 health={selectedSlot?.health ?? null}
                 mana={selectedSlot?.mana ?? null}
+                image={selectedEnemy?.image ?? null}
                 attackRolls={selectedSlot?.attackRolls ?? []}
                 defenseRolls={selectedSlot?.defenseRolls ?? []}
                 baseDefenseRolls={selectedSlot?.baseDefenseRolls ?? []}

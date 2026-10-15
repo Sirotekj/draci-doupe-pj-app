@@ -1,9 +1,12 @@
+import * as ImagePicker from 'expo-image-picker';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   Switch,
   TextInput,
@@ -17,6 +20,10 @@ import {
   updateEnemy,
   useBestiary,
 } from '@/features/bestiary/bestiary-store';
+import {
+  deleteEnemyImage,
+  storeEnemyImage,
+} from '@/features/bestiary/enemy-image';
 import {
   enemyToForm,
   formToDetails,
@@ -110,7 +117,12 @@ export function EnemyFormScreen() {
     ? (bestiary.enemies.find((item) => item.id === id) ?? null)
     : null;
   const [draft, setDraft] = useState<EnemyFormValues | null>(null);
+  const [imageDraft, setImageDraft] = useState<string | null | undefined>(
+    undefined,
+  );
+  const saving = useRef(false);
   const values = draft ?? enemyToForm(enemy);
+  const image = imageDraft === undefined ? (enemy?.image ?? null) : imageDraft;
   const missing = editing && bestiary.ready && enemy === null;
   const showForm = !missing && (!editing || enemy !== null);
 
@@ -122,23 +134,86 @@ export function EnemyFormScreen() {
     setDraft({ ...values, [key]: next });
   }
 
-  function save() {
-    const details = formToDetails(values);
+  async function pickImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [3, 4],
+      quality: 0.7,
+    });
+
+    if (result.canceled) {
+      return;
+    }
+
+    setImageDraft(result.assets[0]?.uri ?? null);
+  }
+
+  async function save() {
+    if (saving.current) {
+      return;
+    }
+
+    const details = formToDetails(values, null);
 
     if (details === null) {
       return;
     }
 
-    const saved = editing
-      ? updateEnemy(id, details)
-      : createEnemy(details) !== null;
+    saving.current = true;
+    let createdId: string | null = null;
+    let stored = image;
 
-    if (!saved) {
-      return;
+    try {
+      const savedId = editing ? id : createEnemy(details)?.id;
+
+      if (!savedId) {
+        return;
+      }
+
+      if (!editing) {
+        createdId = savedId;
+      }
+
+      const previous = enemy?.image ?? null;
+
+      if (image && image !== previous) {
+        stored = await storeEnemyImage(savedId, image);
+      }
+
+      const saved = updateEnemy(savedId, { ...details, image: stored });
+
+      if (!saved) {
+        if (createdId) {
+          deleteEnemy(createdId);
+        }
+
+        if (stored && stored !== previous) {
+          deleteEnemyImage(stored);
+        }
+
+        return;
+      }
+
+      if (previous && previous !== stored) {
+        deleteEnemyImage(previous);
+      }
+
+      Keyboard.dismiss();
+      closeForm();
+    } catch (error: unknown) {
+      console.error(error);
+
+      if (createdId) {
+        deleteEnemy(createdId);
+      }
+
+      if (stored && stored !== image && stored !== (enemy?.image ?? null)) {
+        deleteEnemyImage(stored);
+      }
+    } finally {
+      saving.current = false;
     }
-
-    Keyboard.dismiss();
-    closeForm();
   }
 
   function remove() {
@@ -146,6 +221,7 @@ export function EnemyFormScreen() {
       return;
     }
 
+    deleteEnemyImage(enemy?.image ?? null);
     removeEnemyFromCombat(id);
     closeForm();
   }
@@ -182,10 +258,34 @@ export function EnemyFormScreen() {
                   value={values.name}
                 />
                 <View className="flex-row gap-2">
-                  <View
+                  <Pressable
+                    accessibilityLabel="Vybrat obrázek"
+                    accessibilityRole="button"
+                    className="aspect-[3/4] w-2/5 items-center justify-center overflow-hidden border border-yellow"
                     id="image"
-                    className="aspect-[3/4] w-2/5 border border-yellow"
-                  />
+                    onPress={() => {
+                      void pickImage();
+                    }}
+                  >
+                    {image ? (
+                      <Image
+                        accessibilityIgnoresInvertColors
+                        resizeMode="cover"
+                        source={{ uri: image }}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          left: 0,
+                        }}
+                      />
+                    ) : (
+                      <Text className="px-small text-center text-yellow">
+                        Obrázek
+                      </Text>
+                    )}
+                  </Pressable>
                   <View className="flex-1 justify-between gap-2">
                     <FormField
                       kind="number"

@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
 import { DiceButton } from '@/shared/ui/dice-button';
 import { SignButton } from '@/shared/ui/sign-button';
@@ -45,6 +45,7 @@ type Props = {
   defenseValue: string | undefined;
   health: number | null;
   mana: number | null;
+  image: string | null;
   attackRolls: number[];
   defenseRolls: number[];
   baseDefenseRolls: number[];
@@ -62,6 +63,7 @@ export function ControlsSection({
   defenseValue,
   health,
   mana,
+  image,
   attackRolls,
   defenseRolls,
   baseDefenseRolls,
@@ -97,8 +99,18 @@ export function ControlsSection({
       <View className="flex-1 flex-row justify-between gap-2">
         <View
           id="image"
-          className="border border-yellow w-2/5  aspect-[3/4]"
-        ></View>
+          className="aspect-[3/4] w-2/5 overflow-hidden border border-yellow"
+        >
+          {image ? (
+            <Image
+              accessibilityIgnoresInvertColors
+              accessibilityLabel="Obrázek nepřítele"
+              resizeMode="cover"
+              source={{ uri: image }}
+              style={{ width: '100%', height: '100%' }}
+            />
+          ) : null}
+        </View>
         {attackValue && defenseValue && baseDefense && (
           <View className="flex-1">
             <View className="flex-1 flex-row justify-between items-center gap-2">

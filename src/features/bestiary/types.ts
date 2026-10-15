@@ -27,6 +27,7 @@ export type Enemy = {
   experiencePoints: number | null;
   notes: string | null;
   description: string | null;
+  image: string | null;
   isPublic: boolean;
 };
 

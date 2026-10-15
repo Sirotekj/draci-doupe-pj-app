@@ -1,7 +1,9 @@
 import type { Enemy, EnemyDetails } from '@/features/bestiary/types';
 
 export type EnemyFormValues = {
-  [Key in keyof EnemyDetails]: Key extends 'isPublic' ? boolean : string;
+  [Key in keyof Omit<EnemyDetails, 'image'>]: Key extends 'isPublic'
+    ? boolean
+    : string;
 };
 
 type TextKind = 'text' | 'longText' | 'number';
@@ -134,6 +136,7 @@ export function detailsFromUnknown(value: unknown): EnemyDetails | null {
     experiencePoints: optionalNumber(value.experiencePoints),
     notes: optionalString(value.notes),
     description: optionalString(value.description),
+    image: optionalString(value.image),
     isPublic: value.isPublic === true,
   };
 }
@@ -220,9 +223,13 @@ function formNumber(value: string) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export function formToDetails(values: EnemyFormValues): EnemyDetails | null {
+export function formToDetails(
+  values: EnemyFormValues,
+  image: string | null,
+): EnemyDetails | null {
   return detailsFromUnknown({
     ...values,
+    image,
     health: formNumber(values.health),
     level: formNumber(values.level),
     divinePower: formNumber(values.divinePower),
