@@ -45,6 +45,8 @@ type Props = {
   defenseValue: string | undefined;
   health: number | null;
   mana: number | null;
+  favor: number | null;
+  adrenaline: number | null;
   image: string | null;
   attackRolls: number[];
   defenseRolls: number[];
@@ -54,6 +56,8 @@ type Props = {
   onRollBaseDefense: (rolls: number[]) => void;
   onChangeHealth: (health: number) => void;
   onChangeMana: (mana: number) => void;
+  onChangeFavor: (mana: number) => void;
+  onChangeAdrenaline: (mana: number) => void;
 };
 
 export function ControlsSection({
@@ -63,6 +67,8 @@ export function ControlsSection({
   defenseValue,
   health,
   mana,
+  favor,
+  adrenaline,
   image,
   attackRolls,
   defenseRolls,
@@ -72,6 +78,8 @@ export function ControlsSection({
   onRollBaseDefense,
   onChangeHealth,
   onChangeMana,
+  onChangeFavor,
+  onChangeAdrenaline,
 }: Props) {
   function changeHealth(sign: '+' | '-') {
     if (health === null) {
@@ -92,6 +100,26 @@ export function ControlsSection({
       return;
     }
     onChangeMana(next);
+  }
+  function changeFavor(sign: '+' | '-') {
+    if (favor === null) {
+      return;
+    }
+    const next = sign === '+' ? favor + 1 : favor - 1;
+    if (next < 0) {
+      return;
+    }
+    onChangeFavor(next);
+  }
+  function changeAdrenaline(sign: '+' | '-') {
+    if (adrenaline === null) {
+      return;
+    }
+    const next = sign === '+' ? adrenaline + 1 : adrenaline - 1;
+    if (next < 0) {
+      return;
+    }
+    onChangeAdrenaline(next);
   }
 
   return (
@@ -219,10 +247,34 @@ export function ControlsSection({
       {mana && (
         <View className="flex-1 flex-row justify-center gap-2">
           <Text className="font-cinzel text-2xl text-white">
-            {`Mana/Přízeň: ${mana}`}
+            {`Mana: ${mana}`}
           </Text>
           <SignButton sign="+" onPress={() => changeMana('+')}></SignButton>
           <SignButton sign="-" onPress={() => changeMana('-')}></SignButton>
+        </View>
+      )}
+      {favor && (
+        <View className="flex-1 flex-row justify-center gap-2">
+          <Text className="font-cinzel text-2xl text-white">
+            {`Přízeň: ${favor}`}
+          </Text>
+          <SignButton sign="+" onPress={() => changeFavor('+')}></SignButton>
+          <SignButton sign="-" onPress={() => changeFavor('-')}></SignButton>
+        </View>
+      )}
+      {adrenaline && (
+        <View className="flex-1 flex-row justify-center gap-2">
+          <Text className="font-cinzel text-2xl text-white">
+            {`Adrenalin: ${adrenaline}`}
+          </Text>
+          <SignButton
+            sign="+"
+            onPress={() => changeAdrenaline('+')}
+          ></SignButton>
+          <SignButton
+            sign="-"
+            onPress={() => changeAdrenaline('-')}
+          ></SignButton>
         </View>
       )}
     </>

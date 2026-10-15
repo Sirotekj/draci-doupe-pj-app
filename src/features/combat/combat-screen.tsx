@@ -99,6 +99,8 @@ export function CombatScreen() {
   const name = findFilledField(filledFields, 'name');
   const health = findFilledField(filledFields, 'health');
   const mana = findFilledField(filledFields, 'mana');
+  const favor = findFilledField(filledFields, 'favor');
+  const adrenaline = findFilledField(filledFields, 'adrenaline');
   const attackValue = findFilledField(filledFields, 'attackValue');
   const damageValue = findFilledField(filledFields, 'damageValue');
   const baseDefense = findFilledField(filledFields, 'baseDefense');
@@ -223,6 +225,8 @@ export function CombatScreen() {
                 defenseValue={defenseValue?.value}
                 health={selectedSlot?.health ?? null}
                 mana={selectedSlot?.mana ?? null}
+                favor={selectedSlot?.favor ?? null}
+                adrenaline={selectedSlot?.adrenaline ?? null}
                 image={selectedEnemy?.image ?? null}
                 attackRolls={selectedSlot?.attackRolls ?? []}
                 defenseRolls={selectedSlot?.defenseRolls ?? []}
@@ -258,6 +262,18 @@ export function CombatScreen() {
                     return;
                   }
                   updateCombatSlot(selectedSlot.id, { mana: next });
+                }}
+                onChangeFavor={(next) => {
+                  if (!selectedSlot) {
+                    return;
+                  }
+                  updateCombatSlot(selectedSlot.id, { favor: next });
+                }}
+                onChangeAdrenaline={(next) => {
+                  if (!selectedSlot) {
+                    return;
+                  }
+                  updateCombatSlot(selectedSlot.id, { adrenaline: next });
                 }}
               />
             </CombatSection>

@@ -96,6 +96,8 @@ function parseCombat(
         enemyId: item.enemyId,
         health: parseOptionalNumber(item.health),
         mana: parseOptionalNumber(item.mana),
+        favor: parseOptionalNumber(item.favor),
+        adrenaline: parseOptionalNumber(item.adrenaline),
         initiative: parseOptionalNumber(item.initiative),
         attackRolls: parseRolls(item.attackRolls, item.rolledAttack),
         defenseRolls: parseRolls(item.defenseRolls, item.rolledDefense),
@@ -171,6 +173,8 @@ export function addEnemyToCombat(
   enemyId: string,
   health: number | null,
   mana: number | null,
+  favor: number | null,
+  adrenaline: number | null,
 ) {
   if (!snapshot.ready || enemyId.length === 0) {
     return;
@@ -181,6 +185,8 @@ export function addEnemyToCombat(
     enemyId,
     health: parseOptionalNumber(health),
     mana: parseOptionalNumber(mana),
+    favor: parseOptionalNumber(favor),
+    adrenaline: parseOptionalNumber(adrenaline),
     initiative: null,
     attackRolls: [],
     defenseRolls: [],

@@ -21,15 +21,15 @@ import {
   useBestiary,
 } from '@/features/bestiary/bestiary-store';
 import {
-  deleteEnemyImage,
-  storeEnemyImage,
-} from '@/features/bestiary/enemy-image';
-import {
   enemyToForm,
   formToDetails,
   isNumberDraft,
   type EnemyFormValues,
 } from '@/features/bestiary/enemy-fields';
+import {
+  deleteEnemyImage,
+  storeEnemyImage,
+} from '@/features/bestiary/enemy-image';
 import { removeEnemyFromCombat } from '@/features/combat/combat-store';
 import { colors } from '@/shared/theme/colors';
 import { defaultFont } from '@/shared/theme/typography';
@@ -332,11 +332,27 @@ export function EnemyFormScreen() {
                 />
                 <FormField
                   kind="number"
-                  label="Mana/Přízeň"
+                  label="Mana"
                   onChangeText={(next) => {
                     changeText('mana', next, 'number');
                   }}
                   value={values.mana}
+                />
+                <FormField
+                  kind="number"
+                  label="Přízeň"
+                  onChangeText={(next) => {
+                    changeText('favor', next, 'number');
+                  }}
+                  value={values.favor}
+                />
+                <FormField
+                  kind="number"
+                  label="Adrenalin"
+                  onChangeText={(next) => {
+                    changeText('adrenaline', next, 'number');
+                  }}
+                  value={values.adrenaline}
                 />
               </View>
               <View className={sectionClassName}>

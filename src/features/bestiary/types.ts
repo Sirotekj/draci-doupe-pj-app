@@ -3,6 +3,8 @@ export type Enemy = {
   name: string;
   health: number | null;
   mana: number | null;
+  favor: number | null;
+  adrenaline: number | null;
   level: number | null;
   divinePower: number | null;
   challengeRating: string | null;

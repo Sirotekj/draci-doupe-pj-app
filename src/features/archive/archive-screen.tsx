@@ -43,7 +43,13 @@ export function ArchiveScreen() {
                   <Button
                     text="Přidat"
                     onPress={() => {
-                      addEnemyToCombat(enemy.id, enemy.health, enemy.mana);
+                      addEnemyToCombat(
+                        enemy.id,
+                        enemy.health,
+                        enemy.mana,
+                        enemy.favor,
+                        enemy.adrenaline,
+                      );
                       router.navigate('/combat');
                     }}
                   />
