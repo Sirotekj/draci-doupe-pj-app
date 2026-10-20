@@ -15,22 +15,16 @@ export type OfflineAccess = {
   mode: 'offline';
 };
 
-/**
- * Online access uses the NextAuth models on the web app:
- * Session.sessionToken and User.
- * Google will be an Account with provider "google" and providerAccountId set to the Google sub.
- * sessionToken and user stay empty until that sign-in is connected.
- */
-export type OnlineAccess = {
-  mode: 'online';
-  sessionToken: string | null;
-  user: SessionUser | null;
+/** Session returned by POST /api/auth/mobile/google. */
+export type MobileSession = {
+  sessionToken: string;
+  expires: string;
+  user: SessionUser;
 };
 
-export type AppAccess = OfflineAccess | OnlineAccess;
+/** Online access is a NextAuth Session plus the User from the web app. */
+export type OnlineAccess = {
+  mode: 'online';
+} & MobileSession;
 
-export function isSignedIn(
-  access: AppAccess | null,
-): access is OnlineAccess & { sessionToken: string; user: SessionUser } {
-  return access?.mode === 'online' && access.sessionToken !== null && access.user !== null;
-}
+export type AppAccess = OfflineAccess | OnlineAccess;

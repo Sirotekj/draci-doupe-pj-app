@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-import type { AppAccess } from '@/features/access/types';
+import type { AppAccess, MobileSession } from '@/features/access/types';
 
 let access: AppAccess | null = null;
 const listeners = new Set<() => void>();
@@ -31,9 +31,8 @@ export function continueOffline() {
   setAccess({ mode: 'offline' });
 }
 
-/** Enters online mode without a NextAuth session. Sign-in fills that in later. */
-export function beginOnline() {
-  setAccess({ mode: 'online', sessionToken: null, user: null });
+export function establishSession(session: MobileSession) {
+  setAccess({ mode: 'online', ...session });
 }
 
 export function clearAccess() {

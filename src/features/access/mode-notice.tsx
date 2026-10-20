@@ -1,7 +1,6 @@
 import { View } from 'react-native';
 
 import { useAccess } from '@/features/access/access-store';
-import { isSignedIn } from '@/features/access/types';
 import { Text } from '@/shared/ui/text';
 
 export function ModeNotice() {
@@ -22,25 +21,13 @@ export function ModeNotice() {
     );
   }
 
-  if (isSignedIn(access)) {
-    const label = access.user.name ?? access.user.email ?? 'Účet';
-
-    return (
-      <View className="gap-1">
-        <Text className="text-yellow">Online</Text>
-        <Text className="text-white">
-          {label} · {access.user.role}
-        </Text>
-      </View>
-    );
-  }
+  const label = access.user.name ?? access.user.email ?? 'Účet';
 
   return (
     <View className="gap-1">
       <Text className="text-yellow">Online</Text>
       <Text className="text-white">
-        Přihlášení k účtu z webové aplikace ještě není připojené. Vzdálený archiv
-        zůstává zavřený.
+        {label} · {access.user.role}
       </Text>
     </View>
   );
