@@ -96,7 +96,12 @@ export function enemyFromUnknown(value: unknown): Enemy | null {
     return null;
   }
 
-  return { id: value.id, ...details };
+  return {
+    id: value.id,
+    ...details,
+    imageMultiply: value.imageMultiply === true,
+    authorId: optionalString(value.authorId),
+  };
 }
 
 export function detailsFromUnknown(value: unknown): EnemyDetails | null {

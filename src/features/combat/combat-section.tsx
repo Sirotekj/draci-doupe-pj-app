@@ -7,9 +7,13 @@ type CombatSectionProps = {
 };
 
 export function CombatSection({ children, className }: CombatSectionProps) {
-  const sectionClassName = className
-    ? `pb-medium gap-4 border-b border-yellow/25 ${className}`
-    : 'pb-medium gap-4 border-b border-yellow/25';
-
-  return <View className={sectionClassName}>{children}</View>;
+  return (
+    <View
+      className={['gap-4 rounded border border-yellow/30 bg-card p-medium', className]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {children}
+    </View>
+  );
 }

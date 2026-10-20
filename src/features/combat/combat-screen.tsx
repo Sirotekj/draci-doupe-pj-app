@@ -4,6 +4,8 @@ import { Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import { useBestiary } from '@/features/bestiary/bestiary-store';
 import { filledEnemyFields } from '@/features/bestiary/enemy-fields';
+import { useRemoteEnemies } from '@/features/bestiary/remote-bestiary-store';
+import type { Enemy } from '@/features/bestiary/types';
 import {
   removeCombatSlot,
   selectCombatSlot,
@@ -23,6 +25,14 @@ import { ControlsSection } from './controls-section';
 import { MainAttributesSection } from './main-attributes-section';
 
 type FilledField = ReturnType<typeof filledEnemyFields>[number];
+
+function findEnemy(local: Enemy[], remote: Enemy[], enemyId: string) {
+  return (
+    local.find((enemy) => enemy.id === enemyId) ??
+    remote.find((enemy) => enemy.id === enemyId) ??
+    null
+  );
+}
 
 function findFilledField(fields: FilledField[], key: FilledField['key']) {
   return fields.find((field) => field.key === key);
@@ -56,13 +66,13 @@ function FilledPlainTextField({ field }: { field: FilledField | undefined }) {
 export function CombatScreen() {
   const combat = useCombat();
   const bestiary = useBestiary();
+  const remote = useRemoteEnemies();
   const scroller = useRef<ScrollView>(null);
   const ready = combat.ready && bestiary.ready;
   const selectedSlot =
     combat.slots.find((slot) => slot.id === combat.selectedSlotId) ?? null;
   const selectedEnemy = selectedSlot
-    ? (bestiary.enemies.find((enemy) => enemy.id === selectedSlot.enemyId) ??
-      null)
+    ? findEnemy(bestiary.enemies, remote.enemies, selectedSlot.enemyId)
     : null;
 
   useEffect(() => {
@@ -126,6 +136,29 @@ export function CombatScreen() {
   const habitat = findFilledField(filledFields, 'habitat');
   const notes = findFilledField(filledFields, 'notes');
   const description = findFilledField(filledFields, 'description');
+  const hasAttributes = Boolean(
+    movement ||
+    size ||
+    strength ||
+    dexterity ||
+    constitution ||
+    intelligence ||
+    charisma,
+  );
+  const hasProfile = Boolean(
+    level || divinePower || challengeRating || type || experiencePoints,
+  );
+  const hasLore = Boolean(
+    specialAbilities ||
+    resistances ||
+    immunities ||
+    weaknesses ||
+    skills ||
+    isPublic ||
+    habitat ||
+    notes ||
+    description,
+  );
 
   return (
     <Screen>
@@ -143,7 +176,7 @@ export function CombatScreen() {
                 key={slot.id}
                 active={slot.id === combat.selectedSlotId}
                 name={
-                  bestiary.enemies.find((enemy) => enemy.id === slot.enemyId)
+                  findEnemy(bestiary.enemies, remote.enemies, slot.enemyId)
                     ?.name ?? ''
                 }
                 done={slot.played}
@@ -163,7 +196,7 @@ export function CombatScreen() {
         ) : null}
         <ScrollView
           className="flex-1"
-          contentContainerClassName="gap-4 px-small pb-small"
+          contentContainerClassName="gap-6 px-small pb-medium"
         >
           {name ||
           health ||
@@ -278,44 +311,31 @@ export function CombatScreen() {
               />
             </CombatSection>
           ) : null}
-          {movement ||
-          size ||
-          strength ||
-          dexterity ||
-          constitution ||
-          intelligence ||
-          charisma ? (
+          {hasAttributes || hasProfile ? (
             <CombatSection>
-              <MainAttributesSection
-                movement={movement?.value}
-                size={size?.value}
-                strength={strength?.value}
-                dexterity={dexterity?.value}
-                constitution={constitution?.value}
-                intelligence={intelligence?.value}
-                charisma={charisma?.value}
-              />
+              {hasAttributes ? (
+                <MainAttributesSection
+                  movement={movement?.value}
+                  size={size?.value}
+                  strength={strength?.value}
+                  dexterity={dexterity?.value}
+                  constitution={constitution?.value}
+                  intelligence={intelligence?.value}
+                  charisma={charisma?.value}
+                />
+              ) : null}
+              {hasProfile ? (
+                <View className="gap-4">
+                  <FilledEnemyField field={level} />
+                  <FilledEnemyField field={divinePower} />
+                  <FilledEnemyField field={challengeRating} />
+                  <FilledEnemyField field={type} />
+                  <FilledEnemyField field={experiencePoints} />
+                </View>
+              ) : null}
             </CombatSection>
           ) : null}
-          {level ||
-          divinePower ||
-          challengeRating ||
-          type ||
-          experiencePoints ? (
-            <CombatSection>
-              <FilledEnemyField field={level} />
-              <FilledEnemyField field={divinePower} />
-              <FilledEnemyField field={challengeRating} />
-              <FilledEnemyField field={type} />
-              <FilledEnemyField field={experiencePoints} />
-            </CombatSection>
-          ) : null}
-          {specialAbilities ||
-          resistances ||
-          immunities ||
-          weaknesses ||
-          skills ||
-          isPublic ? (
+          {hasLore ? (
             <CombatSection>
               <FilledEnemyField field={specialAbilities} />
               <FilledEnemyField field={resistances} />
@@ -323,20 +343,8 @@ export function CombatScreen() {
               <FilledEnemyField field={weaknesses} />
               <FilledEnemyField field={skills} />
               <FilledEnemyField field={isPublic} />
-            </CombatSection>
-          ) : null}
-          {habitat ? (
-            <CombatSection>
               <FilledPlainTextField field={habitat} />
-            </CombatSection>
-          ) : null}
-          {notes ? (
-            <CombatSection>
               <FilledPlainTextField field={notes} />
-            </CombatSection>
-          ) : null}
-          {description ? (
-            <CombatSection>
               <FilledPlainTextField field={description} />
             </CombatSection>
           ) : null}

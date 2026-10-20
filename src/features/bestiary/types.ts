@@ -30,7 +30,9 @@ export type Enemy = {
   notes: string | null;
   description: string | null;
   image: string | null;
+  imageMultiply: boolean;
   isPublic: boolean;
+  authorId: string | null;
 };
 
-export type EnemyDetails = Omit<Enemy, 'id'>;
+export type EnemyDetails = Omit<Enemy, 'id' | 'imageMultiply' | 'authorId'>;

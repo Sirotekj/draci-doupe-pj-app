@@ -1,6 +1,6 @@
 import { roles, type MobileSession, type Role } from '@/features/access/types';
 
-function apiBaseUrl() {
+export function apiBaseUrl() {
   const url = process.env.EXPO_PUBLIC_API_URL;
 
   if (!url) {
@@ -14,7 +14,7 @@ function isRole(value: unknown): value is Role {
   return roles.some((role) => role === value);
 }
 
-function readErrorMessage(body: unknown, status: number) {
+export function readErrorMessage(body: unknown, status: number) {
   if (typeof body === 'object' && body !== null) {
     const error = (body as { error?: unknown }).error;
 

@@ -168,8 +168,8 @@ export function DiceButton({ sides, onRoll }: DiceButtonProps) {
         <View
           className={
             sides === 6
-              ? 'flex-1 bg-[#FFC270]/50 border-[#000000]'
-              : 'flex-1 items-center justify-center bg-[#FFC270]/50 px-small border-[#000000]'
+              ? 'flex-1 border-[#000000] bg-ember/50'
+              : 'flex-1 items-center justify-center border-[#000000] bg-ember/50 px-small'
           }
           style={{ borderRadius: radius - borderWidth }}
         >
