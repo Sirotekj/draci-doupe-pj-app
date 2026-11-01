@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import { useBestiary } from '@/features/bestiary/bestiary-store';
@@ -145,10 +145,11 @@ export function CombatScreen() {
     intelligence ||
     charisma,
   );
-  const hasProfile = Boolean(
-    level || divinePower || challengeRating || type || experiencePoints,
-  );
+  const hasProfile = Boolean(level || experiencePoints);
   const hasLore = Boolean(
+    divinePower ||
+    challengeRating ||
+    type ||
     specialAbilities ||
     resistances ||
     immunities ||
@@ -160,6 +161,8 @@ export function CombatScreen() {
     description,
   );
 
+  const [moreInfo, setMoreInfo] = useState(false);
+
   return (
     <Screen>
       <View className="flex-1 gap-4 pt-small">
@@ -167,7 +170,7 @@ export function CombatScreen() {
           <ScrollView
             ref={scroller}
             horizontal
-            contentContainerClassName="gap-2 min-w-full p-small border-t border-b border-yellow/25"
+            contentContainerClassName="gap-2 min-w-full p-small border-t border-b border-yellow/50 bg-black/50"
             showsHorizontalScrollIndicator={false}
             style={{ flexGrow: 0 }}
           >
@@ -206,15 +209,18 @@ export function CombatScreen() {
           baseDefense ||
           defenseValue ? (
             <CombatSection>
-              <View className="flex-1 flex-row justify-between">
-                <Text className="font-cinzel text-2xl text-yellow">
+              <View className="flex-row items-center justify-between gap-2">
+                <Text
+                  className="min-w-0 flex-1 font-cinzel text-2xl text-yellow"
+                  numberOfLines={1}
+                >
                   {name?.value}
                 </Text>
 
                 <Pressable
                   id="done"
                   accessibilityRole="button"
-                  className="rounded border border-yellow/50 p-2"
+                  className="shrink-0 rounded border border-yellow/50 p-2"
                   style={{
                     backgroundColor: selectedSlot?.played
                       ? `${colors.yellow}40`
@@ -230,8 +236,8 @@ export function CombatScreen() {
                     });
                   }}
                 >
-                  <Text className="text-yellow">
-                    {selectedSlot?.played ? 'už hrál' : 'Ještě nehrál'}
+                  <Text className="shrink-0 text-yellow" numberOfLines={1}>
+                    {selectedSlot?.played ? 'Už hrál' : 'Ještě nehrál'}
                   </Text>
                 </Pressable>
               </View>
@@ -327,27 +333,39 @@ export function CombatScreen() {
               {hasProfile ? (
                 <View className="gap-4">
                   <FilledEnemyField field={level} />
-                  <FilledEnemyField field={divinePower} />
-                  <FilledEnemyField field={challengeRating} />
-                  <FilledEnemyField field={type} />
                   <FilledEnemyField field={experiencePoints} />
                 </View>
               ) : null}
             </CombatSection>
           ) : null}
-          {hasLore ? (
+          {!moreInfo && (
+            <Button
+              text="Více detailů"
+              onPress={() => setMoreInfo(true)}
+            ></Button>
+          )}
+          {hasLore && moreInfo ? (
             <CombatSection>
+              <FilledEnemyField field={divinePower} />
+              <FilledEnemyField field={challengeRating} />
+              <FilledEnemyField field={type} />
               <FilledEnemyField field={specialAbilities} />
               <FilledEnemyField field={resistances} />
               <FilledEnemyField field={immunities} />
               <FilledEnemyField field={weaknesses} />
               <FilledEnemyField field={skills} />
-              <FilledEnemyField field={isPublic} />
               <FilledPlainTextField field={habitat} />
               <FilledPlainTextField field={notes} />
               <FilledPlainTextField field={description} />
+              <FilledEnemyField field={isPublic} />
             </CombatSection>
           ) : null}
+          {moreInfo && (
+            <Button
+              text="Méně detailů"
+              onPress={() => setMoreInfo(false)}
+            ></Button>
+          )}
           {ready && selectedSlot ? (
             <Button
               text="Odebrat"

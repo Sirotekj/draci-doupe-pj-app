@@ -1,22 +1,17 @@
-import { Platform, Pressable, View, type ViewStyle } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme/colors';
 import { Text } from '@/shared/ui/text';
 
 const side = 24;
 const radius = 4;
 const borderWidth = 1;
+/** Lighter stop of colors.gradient. A real border is not painted behind the fill. */
+const borderColor = '#3A3228';
 
 type SignButtonProps = {
   sign: '+' | '-';
   onPress: () => void;
 };
-
-const borderBackground = (
-  Platform.OS === 'web'
-    ? { backgroundImage: colors.gradient }
-    : { experimental_backgroundImage: colors.gradient }
-) as ViewStyle;
 
 export function SignButton({ sign, onPress }: SignButtonProps) {
   return (
@@ -25,21 +20,19 @@ export function SignButton({ sign, onPress }: SignButtonProps) {
       accessibilityLabel={sign}
       onPress={onPress}
       style={{
-        ...borderBackground,
         width: side,
         height: side,
         borderRadius: radius,
-        padding: borderWidth,
-        overflow: 'hidden',
+        borderWidth,
+        borderColor,
       }}
     >
       <View
-        className="flex-1 items-center justify-center bg-black"
+        className="flex-1 items-center justify-center bg-black/60"
         style={{ borderRadius: radius - borderWidth }}
       >
         <Text
-          adjustsFontSizeToFit
-          className="text-center text-yellow mt-1.5"
+          className="text-center text-yellow mt-0.5"
           minimumFontScale={0.5}
           numberOfLines={1}
         >

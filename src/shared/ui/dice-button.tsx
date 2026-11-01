@@ -171,7 +171,9 @@ export function DiceButton({ sides, onRoll }: DiceButtonProps) {
               ? 'flex-1 border-[#000000] bg-ember/50'
               : 'flex-1 items-center justify-center border-[#000000] bg-ember/50 px-small'
           }
-          style={{ borderRadius: radius - borderWidth }}
+          style={{
+            borderRadius: radius - borderWidth,
+          }}
         >
           {sides === 6 ? (
             <DicePips value={face ?? sides} />

@@ -16,7 +16,7 @@ export default function DrawerLayout() {
           fontWeight: 'normal',
         },
         drawerLabelStyle: { fontFamily: defaultFont, fontWeight: 'normal' },
-        sceneStyle: { backgroundColor: colors.black },
+        sceneStyle: { backgroundColor: 'transparent' },
         drawerStyle: { backgroundColor: colors.black },
         drawerActiveTintColor: colors.white,
         drawerInactiveTintColor: colors.white,

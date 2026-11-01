@@ -40,13 +40,13 @@ export function ArchiveScreen() {
                 router.push('/enemy');
               }}
             />
+            <Text className="font-cinzel text-lg text-yellow text-center">
+              Tvoji nepřátelé
+            </Text>
             {bestiary.enemies.length === 0 ? (
               <Text className="text-white">Zatím tu žádný nepřítel není.</Text>
             ) : (
               <>
-                <Text className="font-cinzel text-yellow text-center">
-                  Tvoji nepřátelé
-                </Text>
                 {bestiary.enemies.map((enemy) => (
                   <View key={enemy.id} className="flex-row items-center gap-4">
                     <Text className="min-w-0 flex-1 text-white">
@@ -73,14 +73,16 @@ export function ArchiveScreen() {
             )}
             {online ? (
               <>
-                <Text className="font-cinzel text-yellow text-center">
+                <Text className="font-cinzel text-lg text-yellow text-center">
                   Z databáze
                 </Text>
                 {remote.error ? (
                   <Text className="text-red">{remote.error}</Text>
                 ) : null}
                 {!remote.ready && remote.enemies.length === 0 ? (
-                  <Text className="text-white">Načítám nepřátele z databáze.</Text>
+                  <Text className="text-white">
+                    Načítám nepřátele z databáze.
+                  </Text>
                 ) : remote.enemies.length === 0 && !remote.error ? (
                   <Text className="text-white">
                     V databázi zatím žádný nepřítel není.

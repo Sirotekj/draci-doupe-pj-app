@@ -19,6 +19,9 @@ export function MainAttributesSection({
   charisma,
 }: Props) {
   const textStyle = 'font-cinzel text-white text-xl text-center';
+  const attributeCellStyle = 'font-cinzel text-white text-xl flex-1';
+  const labelCellStyle = `${attributeCellStyle} text-right`;
+  const bonusCellStyle = `${attributeCellStyle} text-left`;
   const bonusTable: Record<string, string> = {
     '1': '-5',
     '2': '-4',
@@ -58,29 +61,40 @@ export function MainAttributesSection({
       </View>
       <View className="flex-1 justify-center gap-2">
         {strength && (
-          <Text
-            className={textStyle}
-          >{`Síla: ${strength} | ${getBonus(strength)}`}</Text>
+          <View className="flex-row">
+            <Text className={labelCellStyle}>{`Síla: ${strength} | `}</Text>
+            <Text className={bonusCellStyle}>{getBonus(strength)}</Text>
+          </View>
         )}
         {dexterity && (
-          <Text
-            className={textStyle}
-          >{`Obratnost: ${dexterity} | ${getBonus(dexterity)}`}</Text>
+          <View className="flex-row">
+            <Text
+              className={labelCellStyle}
+            >{`Obratnost: ${dexterity} | `}</Text>
+            <Text className={bonusCellStyle}>{getBonus(dexterity)}</Text>
+          </View>
         )}
         {constitution && (
-          <Text
-            className={textStyle}
-          >{`Odolnost: ${constitution} | ${getBonus(constitution)}`}</Text>
+          <View className="flex-row">
+            <Text
+              className={labelCellStyle}
+            >{`Odolnost: ${constitution} | `}</Text>
+            <Text className={bonusCellStyle}>{getBonus(constitution)}</Text>
+          </View>
         )}
         {intelligence && (
-          <Text
-            className={textStyle}
-          >{`Inteligence: ${intelligence} | ${getBonus(intelligence)}`}</Text>
+          <View className="flex-row">
+            <Text
+              className={labelCellStyle}
+            >{`Inteligence: ${intelligence} | `}</Text>
+            <Text className={bonusCellStyle}>{getBonus(intelligence)}</Text>
+          </View>
         )}
         {charisma && (
-          <Text
-            className={textStyle}
-          >{`Charisma: ${charisma} | ${getBonus(charisma)}`}</Text>
+          <View className="flex-row">
+            <Text className={labelCellStyle}>{`Charisma: ${charisma} | `}</Text>
+            <Text className={bonusCellStyle}>{getBonus(charisma)}</Text>
+          </View>
         )}
       </View>
     </>

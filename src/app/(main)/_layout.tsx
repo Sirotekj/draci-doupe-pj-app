@@ -25,7 +25,7 @@ export default function MainLayout() {
           fontFamily: defaultFont,
           fontWeight: 'normal',
         },
-        contentStyle: { backgroundColor: colors.black },
+        contentStyle: { backgroundColor: 'transparent' },
       }}
     >
       <Stack.Screen name="(drawer)" options={{ headerShown: false }} />

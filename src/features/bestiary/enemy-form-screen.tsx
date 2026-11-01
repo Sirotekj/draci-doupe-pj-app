@@ -47,7 +47,9 @@ const inputStyle = {
   borderRadius: 4,
 };
 
-const sectionClassName = 'gap-4 border-b border-yellow/25 pb-medium';
+const sectionClassName = 'gap-4 border-b border-yellow/50 pb-medium';
+const sectionAttributesClassName =
+  'shrink-0 flex-row gap-4 border-b border-yellow/50 pb-medium';
 
 type TextKey = Exclude<keyof EnemyFormValues, 'isPublic'>;
 type FieldKind = 'text' | 'longText' | 'number';
@@ -76,6 +78,7 @@ function FormField({
   autoFocus = false,
   onChangeText,
   vertical,
+  short,
 }: {
   label: string;
   value: string;
@@ -83,16 +86,29 @@ function FormField({
   autoFocus?: boolean;
   onChangeText: (next: string) => void;
   vertical?: boolean;
+  short?: boolean;
 }) {
   return (
     <View
-      className={`w-full ${vertical ? '' : 'flex-1 flex-row items-center'} gap-2 `}
+      className={
+        short
+          ? 'min-w-0 flex-1 flex-col gap-2 pt-medium'
+          : vertical
+            ? 'w-full gap-2 pt-medium'
+            : 'w-full flex-1 flex-row items-center gap-2 pt-medium'
+      }
     >
-      <Text className="text-yellow">{label}</Text>
+      <Text className="text-yellow text-center">{label}</Text>
       <TextInput
         accessibilityLabel={label}
         autoFocus={autoFocus}
-        className={`${!vertical && 'flex-1'} bg-black px-medium py-small text-white`}
+        className={
+          short
+            ? 'w-full shrink-0 bg-black/60 px-medium py-small text-white'
+            : vertical
+              ? 'bg-black/60 px-medium py-small text-white'
+              : 'flex-1 bg-black/60 px-medium py-small text-white'
+        }
         keyboardType={kind === 'number' ? numberKeyboard : 'default'}
         multiline={kind === 'longText'}
         onChangeText={onChangeText}
@@ -100,7 +116,9 @@ function FormField({
         style={
           kind === 'longText'
             ? { ...inputStyle, minHeight: 96, textAlignVertical: 'top' }
-            : inputStyle
+            : short
+              ? { ...inputStyle, minHeight: 35, flexShrink: 0 }
+              : inputStyle
         }
         value={value}
       />
@@ -125,6 +143,8 @@ export function EnemyFormScreen() {
   const image = imageDraft === undefined ? (enemy?.image ?? null) : imageDraft;
   const missing = editing && bestiary.ready && enemy === null;
   const showForm = !missing && (!editing || enemy !== null);
+
+  const [moreInfo, setMoreInfo] = useState(false);
 
   function changeText(key: TextKey, next: string, kind: FieldKind) {
     if (kind === 'number' && !isNumberDraft(next)) {
@@ -236,7 +256,7 @@ export function EnemyFormScreen() {
         className="flex-1"
       >
         <ScrollView
-          className="flex-1"
+          className="flex-1 pt-small"
           contentContainerClassName="gap-4 px-small pb-big"
           keyboardShouldPersistTaps="handled"
         >
@@ -251,17 +271,17 @@ export function EnemyFormScreen() {
                 <FormField
                   autoFocus
                   kind="text"
-                  label="Jméno"
+                  label="Jméno*"
                   onChangeText={(next) => {
                     changeText('name', next, 'text');
                   }}
                   value={values.name}
                 />
-                <View className="flex-row gap-2">
+                <View className="flex-row gap-4">
                   <Pressable
                     accessibilityLabel="Vybrat obrázek"
                     accessibilityRole="button"
-                    className="aspect-[3/4] w-2/5 items-center justify-center overflow-hidden border border-yellow"
+                    className="aspect-[3/4] w-2/5 items-center justify-center overflow-hidden border border-yellow bg-black/75"
                     id="image"
                     onPress={() => {
                       void pickImage();
@@ -330,7 +350,22 @@ export function EnemyFormScreen() {
                   }}
                   value={values.health}
                 />
+                <View className="flex-row items-center justify-between gap-4">
+                  <Text className="text-yellow">Veřejné</Text>
+                  <Switch
+                    accessibilityLabel="Veřejné"
+                    onValueChange={(isPublic) => {
+                      setDraft({ ...values, isPublic });
+                    }}
+                    thumbColor={colors.white}
+                    trackColor={{ false: colors.black, true: colors.yellow }}
+                    value={values.isPublic}
+                  />
+                </View>
+              </View>
+              <View className={sectionAttributesClassName}>
                 <FormField
+                  short
                   kind="number"
                   label="Mana"
                   onChangeText={(next) => {
@@ -339,6 +374,7 @@ export function EnemyFormScreen() {
                   value={values.mana}
                 />
                 <FormField
+                  short
                   kind="number"
                   label="Přízeň"
                   onChangeText={(next) => {
@@ -347,6 +383,7 @@ export function EnemyFormScreen() {
                   value={values.favor}
                 />
                 <FormField
+                  short
                   kind="number"
                   label="Adrenalin"
                   onChangeText={(next) => {
@@ -374,77 +411,11 @@ export function EnemyFormScreen() {
                 />
                 <FormField
                   kind="number"
-                  label="Síla"
-                  onChangeText={(next) => {
-                    changeText('strength', next, 'number');
-                  }}
-                  value={values.strength}
-                />
-                <FormField
-                  kind="number"
-                  label="Obratnost"
-                  onChangeText={(next) => {
-                    changeText('dexterity', next, 'number');
-                  }}
-                  value={values.dexterity}
-                />
-                <FormField
-                  kind="number"
-                  label="Odolnost"
-                  onChangeText={(next) => {
-                    changeText('constitution', next, 'number');
-                  }}
-                  value={values.constitution}
-                />
-                <FormField
-                  kind="number"
-                  label="Inteligence"
-                  onChangeText={(next) => {
-                    changeText('intelligence', next, 'number');
-                  }}
-                  value={values.intelligence}
-                />
-                <FormField
-                  kind="number"
-                  label="Charisma"
-                  onChangeText={(next) => {
-                    changeText('charisma', next, 'number');
-                  }}
-                  value={values.charisma}
-                />
-              </View>
-              <View className={sectionClassName}>
-                <FormField
-                  kind="number"
                   label="Úroveň"
                   onChangeText={(next) => {
                     changeText('level', next, 'number');
                   }}
                   value={values.level}
-                />
-                <FormField
-                  kind="number"
-                  label="Vyšší moc"
-                  onChangeText={(next) => {
-                    changeText('divinePower', next, 'number');
-                  }}
-                  value={values.divinePower}
-                />
-                <FormField
-                  kind="text"
-                  label="Výzva"
-                  onChangeText={(next) => {
-                    changeText('challengeRating', next, 'text');
-                  }}
-                  value={values.challengeRating}
-                />
-                <FormField
-                  kind="text"
-                  label="Typ"
-                  onChangeText={(next) => {
-                    changeText('type', next, 'text');
-                  }}
-                  value={values.type}
                 />
                 <FormField
                   kind="number"
@@ -455,98 +426,172 @@ export function EnemyFormScreen() {
                   value={values.experiencePoints}
                 />
               </View>
-              <View className={sectionClassName}>
+              <View className={sectionAttributesClassName}>
                 <FormField
-                  vertical
-                  kind="longText"
-                  label="Zvl.schopnosti"
+                  short
+                  kind="number"
+                  label="SIL"
                   onChangeText={(next) => {
-                    changeText('specialAbilities', next, 'longText');
+                    changeText('strength', next, 'number');
                   }}
-                  value={values.specialAbilities}
+                  value={values.strength}
                 />
                 <FormField
-                  vertical
-                  kind="longText"
-                  label="Rezistence"
+                  short
+                  kind="number"
+                  label="OBR"
                   onChangeText={(next) => {
-                    changeText('resistances', next, 'longText');
+                    changeText('dexterity', next, 'number');
                   }}
-                  value={values.resistances}
+                  value={values.dexterity}
                 />
                 <FormField
-                  vertical
-                  kind="longText"
-                  label="Imunita"
+                  short
+                  kind="number"
+                  label="ODO"
                   onChangeText={(next) => {
-                    changeText('immunities', next, 'longText');
+                    changeText('constitution', next, 'number');
                   }}
-                  value={values.immunities}
+                  value={values.constitution}
                 />
                 <FormField
-                  vertical
-                  kind="longText"
-                  label="Slabina"
+                  short
+                  kind="number"
+                  label="INT"
                   onChangeText={(next) => {
-                    changeText('weaknesses', next, 'longText');
+                    changeText('intelligence', next, 'number');
                   }}
-                  value={values.weaknesses}
+                  value={values.intelligence}
                 />
                 <FormField
-                  vertical
-                  kind="longText"
-                  label="Dovednosti"
+                  short
+                  kind="number"
+                  label="CHA"
                   onChangeText={(next) => {
-                    changeText('skills', next, 'longText');
+                    changeText('charisma', next, 'number');
                   }}
-                  value={values.skills}
+                  value={values.charisma}
                 />
-                <View className="flex-row items-center justify-between gap-4">
-                  <Text className="text-yellow">Veřejné</Text>
-                  <Switch
-                    accessibilityLabel="Veřejné"
-                    onValueChange={(isPublic) => {
-                      setDraft({ ...values, isPublic });
-                    }}
-                    thumbColor={colors.white}
-                    trackColor={{ false: colors.black, true: colors.yellow }}
-                    value={values.isPublic}
-                  />
+              </View>
+              {!moreInfo && (
+                <Button text="Více detailů" onPress={() => setMoreInfo(true)} />
+              )}
+              {moreInfo ? (
+                <View>
+                  <View className={sectionClassName}>
+                    <FormField
+                      kind="number"
+                      label="Vyšší moc"
+                      onChangeText={(next) => {
+                        changeText('divinePower', next, 'number');
+                      }}
+                      value={values.divinePower}
+                    />
+                    <FormField
+                      kind="text"
+                      label="Výzva"
+                      onChangeText={(next) => {
+                        changeText('challengeRating', next, 'text');
+                      }}
+                      value={values.challengeRating}
+                    />
+                    <FormField
+                      kind="text"
+                      label="Typ"
+                      onChangeText={(next) => {
+                        changeText('type', next, 'text');
+                      }}
+                      value={values.type}
+                    />
+                  </View>
+                  <View className={sectionClassName}>
+                    <FormField
+                      vertical
+                      kind="longText"
+                      label="Zvl.schopnosti"
+                      onChangeText={(next) => {
+                        changeText('specialAbilities', next, 'longText');
+                      }}
+                      value={values.specialAbilities}
+                    />
+                    <FormField
+                      vertical
+                      kind="longText"
+                      label="Rezistence"
+                      onChangeText={(next) => {
+                        changeText('resistances', next, 'longText');
+                      }}
+                      value={values.resistances}
+                    />
+                    <FormField
+                      vertical
+                      kind="longText"
+                      label="Imunita"
+                      onChangeText={(next) => {
+                        changeText('immunities', next, 'longText');
+                      }}
+                      value={values.immunities}
+                    />
+                    <FormField
+                      vertical
+                      kind="longText"
+                      label="Slabina"
+                      onChangeText={(next) => {
+                        changeText('weaknesses', next, 'longText');
+                      }}
+                      value={values.weaknesses}
+                    />
+                    <FormField
+                      vertical
+                      kind="longText"
+                      label="Dovednosti"
+                      onChangeText={(next) => {
+                        changeText('skills', next, 'longText');
+                      }}
+                      value={values.skills}
+                    />
+                  </View>
+                  <View className={sectionClassName}>
+                    <FormField
+                      vertical
+                      kind="text"
+                      label="Výskyt"
+                      onChangeText={(next) => {
+                        changeText('habitat', next, 'text');
+                      }}
+                      value={values.habitat}
+                    />
+                  </View>
+                  <View className={sectionClassName}>
+                    <FormField
+                      vertical
+                      kind="longText"
+                      label="Poznámky"
+                      onChangeText={(next) => {
+                        changeText('notes', next, 'longText');
+                      }}
+                      value={values.notes}
+                    />
+                  </View>
+                  <View className={sectionClassName}>
+                    <FormField
+                      vertical
+                      kind="longText"
+                      label="Popis"
+                      onChangeText={(next) => {
+                        changeText('description', next, 'longText');
+                      }}
+                      value={values.description}
+                    />
+                  </View>
                 </View>
-              </View>
-              <View className={sectionClassName}>
-                <FormField
-                  vertical
-                  kind="text"
-                  label="Výskyt"
-                  onChangeText={(next) => {
-                    changeText('habitat', next, 'text');
-                  }}
-                  value={values.habitat}
+              ) : null}
+              {moreInfo && (
+                <Button
+                  text="Méně detailů"
+                  onPress={() => setMoreInfo(false)}
                 />
-              </View>
-              <View className={sectionClassName}>
-                <FormField
-                  vertical
-                  kind="longText"
-                  label="Poznámky"
-                  onChangeText={(next) => {
-                    changeText('notes', next, 'longText');
-                  }}
-                  value={values.notes}
-                />
-              </View>
-              <View className={sectionClassName}>
-                <FormField
-                  vertical
-                  kind="longText"
-                  label="Popis"
-                  onChangeText={(next) => {
-                    changeText('description', next, 'longText');
-                  }}
-                  value={values.description}
-                />
-              </View>
+              )}
               <Button text="Uložit" onPress={save} />
             </>
           ) : null}

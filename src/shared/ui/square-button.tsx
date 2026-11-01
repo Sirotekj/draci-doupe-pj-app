@@ -1,4 +1,4 @@
-import { Platform, Pressable, View, type ViewStyle } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { colors } from '@/shared/theme/colors';
 import { Text } from '@/shared/ui/text';
@@ -6,6 +6,8 @@ import { Text } from '@/shared/ui/text';
 const side = 48;
 const radius = 4;
 const borderWidth = 1;
+/** Lighter stop of colors.gradient. A real border is not painted behind the fill. */
+const borderColor = '#3A3228';
 
 type SquareButtonProps = {
   value: '+' | number;
@@ -19,13 +21,30 @@ function nameMark(name: string) {
   return name.trim().slice(0, 2);
 }
 
-const doneBackground = `${colors.yellow}40`;
+/** Idle fill. colors.black at 80%. */
+const idleBackground = `${colors.black}AA`;
+/** Played slot. colors.yellow at 25%, so the photo stays visible. */
+const doneBackground = `${colors.yellow}30`;
+/** Selected slot. colors.yellow at 45%. */
+const activeBackground = `${colors.yellow}40`;
+/** Selected and played. colors.yellow at 60%. */
+const activeDoneBackground = `${colors.yellow}60`;
 
-const borderBackground = (
-  Platform.OS === 'web'
-    ? { backgroundImage: colors.gradient }
-    : { experimental_backgroundImage: colors.gradient }
-) as ViewStyle;
+function fillColor(active: boolean, done: boolean) {
+  if (active && done) {
+    return activeDoneBackground;
+  }
+
+  if (active) {
+    return activeBackground;
+  }
+
+  if (done) {
+    return doneBackground;
+  }
+
+  return idleBackground;
+}
 
 export function SquareButton({
   value,
@@ -35,6 +54,7 @@ export function SquareButton({
   done = false,
 }: SquareButtonProps) {
   const mark = value === '+' ? '+' : nameMark(name);
+  const backgroundColor = fillColor(active, done);
 
   return (
     <Pressable
@@ -46,18 +66,15 @@ export function SquareButton({
         width: side,
         height: side,
         borderRadius: radius,
-        padding: borderWidth,
-        overflow: 'hidden',
-        ...(active
-          ? { backgroundColor: `${colors.yellow}40` }
-          : borderBackground),
+        borderWidth,
+        borderColor: active ? colors.yellow : borderColor,
       }}
     >
       <View
         className="relative flex-1"
         style={{
           borderRadius: radius - borderWidth,
-          backgroundColor: done ? doneBackground : colors.black,
+          backgroundColor,
         }}
       >
         {typeof value === 'number' ? (

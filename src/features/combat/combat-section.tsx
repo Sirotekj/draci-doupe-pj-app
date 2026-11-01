@@ -9,7 +9,10 @@ type CombatSectionProps = {
 export function CombatSection({ children, className }: CombatSectionProps) {
   return (
     <View
-      className={['gap-4 rounded border border-yellow/30 bg-card p-medium', className]
+      className={[
+        'gap-4 rounded border border-yellow/30 bg-card/70 p-medium',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
     >

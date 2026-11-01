@@ -2,14 +2,23 @@ import '../../global.css';
 
 import { Asset } from 'expo-asset';
 import { isLoaded, useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import { requireNativeModule } from 'expo-modules-core';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { colors } from '@/shared/theme/colors';
 import { fonts, getFontSources } from '@/shared/theme/typography';
+import { AppBackground } from '@/shared/ui/app-background';
+
+const navigationTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: 'transparent',
+  },
+};
 
 const fontSources = getFontSources();
 
@@ -84,15 +93,27 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: colors.black },
-        statusBarStyle: 'light',
-      }}
-    >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="(main)" />
-    </Stack>
+    <View style={styles.root}>
+      <AppBackground />
+      <ThemeProvider value={navigationTheme}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: 'transparent' },
+            statusBarStyle: 'light',
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(main)" />
+        </Stack>
+      </ThemeProvider>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.black,
+  },
+});
